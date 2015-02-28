@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="35dip"
+        android:orientation="vertical" >
+
+        <TextView
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5px"
+            android:background="@color/themedark"
+            android:gravity="right"
+            android:padding="5px"
+            android:text="SOCIALCLOCK"
+            android:textColor="@color/textwhite"
+            android:textStyle="bold"
+            android:typeface="monospace" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/header"
+        android:background="@drawable/gradient_dark"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/texttitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dip"
+            android:text="设定"
+            android:textColor="@color/textwhite"
+            android:textSize="50dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/btn_oauthWeibo"
+                    style="@style/FontShadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dip"
+                    android:layout_weight="1"
+                    android:background="@color/themeblue"
+                    android:paddingBottom="5dip"
+                    android:paddingTop="5dip"
+                    android:text="新浪微博"
+                    android:textColor="@color/textwhite"
+                    android:textSize="30sp" >
+                </Button>
+
+                <TextView
+                    android:id="@+id/isOauthWeibo"
+                    style="@style/FontShadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dip"
+                    android:layout_weight="1"
+                    android:background="#555555"
+                    android:gravity="center"
+                    android:paddingBottom="5dip"
+                    android:paddingTop="5dip"
+                    android:text="未验证"
+                    android:textColor="@color/textwhite"
+                    android:textSize="30sp" >
+                </TextView>
+
+                <Button
+                    android:id="@+id/btn_testWeibo"
+                    style="@style/FontShadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dip"
+                    android:layout_weight="1"
+                    android:background="@color/themeblue"
+                    android:paddingBottom="5dip"
+                    android:paddingTop="5dip"
+                    android:text="测试"
+                    android:textColor="@color/textwhite"
+                    android:textSize="30sp" >
+                </Button>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textoauth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:text=""
+                android:textColor="@color/textwhite"
+                android:textSize="10dip"
+                android:textStyle="bold" >
+            </TextView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="#000"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_tabMain"
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:layout_weight="1"
+            android:background="@color/themedark"
+            android:gravity="center"
+            android:text="闹钟"
+            android:textColor="@color/textwhite"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/btn_tabAnalytics"
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:layout_weight="1"
+            android:background="@color/themedark"
+            android:gravity="center"
+            android:text="统计"
+            android:textColor="@color/textwhite"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/btn_tabSettings"
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:layout_weight="1"
+            android:background="@drawable/gradient_darkblue"
+            android:gravity="center"
+            android:text="设定"
+            android:textColor="@color/textwhite"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+</RelativeLayout>

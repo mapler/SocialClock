@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="fill_parent"
+        android:layout_height="35dip"
+        android:orientation="vertical" >
+
+        <TextView
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5px"
+            android:background="@color/themedark"
+            android:gravity="right"
+            android:padding="5px"
+            android:text="SOCIALCLOCK"
+            android:textColor="@color/textwhite"
+            android:textStyle="bold"
+            android:typeface="monospace" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/header"
+        android:background="@drawable/gradient_gray"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_analytitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:gravity="center"
+            android:text="统计分析"
+            android:textColor="@color/textdgray"
+            android:textSize="50dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <RelativeLayout
+            android:id="@+id/analytics_board"
+            android:layout_width="fill_parent"
+            android:layout_height="160dip"
+            android:layout_below="@id/header"
+            android:layout_margin="10dip"
+            android:background="@drawable/corner_bg_style"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/analyboard_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dip"
+                android:layout_marginTop="7dip"
+                android:text="    过去7天起床情况统计"
+                android:textColor="@color/textblack"
+                android:textSize="10dip" />
+
+            <View
+                android:id="@+id/title_line"
+                android:layout_width="fill_parent"
+                android:layout_height="1px"
+                android:layout_below="@id/analyboard_title"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="3dip"
+                android:background="@color/textblack" />
+
+            <RelativeLayout
+                android:id="@+id/column_board"
+                android:layout_width="fill_parent"
+                android:layout_height="100dip"
+                android:layout_below="@id/title_line"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="5dip" >
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/bottomblue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="5dip"
+                android:layout_marginLeft="7dip"
+                android:layout_marginRight="10dip"
+                android:background="@drawable/column_red_style"
+                android:text="         "
+                android:textSize="8dip" />
+
+            <TextView
+                android:id="@+id/bottomtext2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dip"
+                android:layout_marginRight="7dip"
+                android:layout_toLeftOf="@id/bottomblue"
+                android:text="贪睡时间"
+                android:textColor="@color/textblack"
+                android:textSize="10dip" />
+
+            <TextView
+                android:id="@+id/bottomred"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dip"
+                android:layout_marginRight="10dip"
+                android:layout_toLeftOf="@id/bottomtext2"
+                android:background="@drawable/column_blue_style"
+                android:text="         "
+                android:textSize="8dip" />
+
+            <TextView
+                android:id="@+id/bottomtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dip"
+                android:layout_marginRight="7dip"
+                android:layout_toLeftOf="@id/bottomred"
+                android:text="提前起床时间"
+                android:textColor="@color/textblack"
+                android:textSize="10dip" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="过去7天总共贪睡"
+                android:textColor="@color/textdgray"
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/txAvgSnoozeTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3小时24分钟"
+                android:textColor="@color/textdgray"
+                android:textSize="20dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="平均每天贪睡"
+                android:textColor="@color/textdgray"
+                android:textSize="27dip" />
+
+            <TextView
+                android:id="@+id/txAvgSnoozeTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="20分钟"
+                android:textColor="@color/textdgray"
+                android:textSize="27dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="成功起床"
+                android:textColor="@color/textdgray"
+                android:textSize="47dip" />
+
+            <TextView
+                android:id="@+id/txAvgSnoozeTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7"
+                android:layout_marginTop="0px"
+                android:paddingTop="0px"
+                android:textColor="@color/textdgray"
+                android:textSize="47dip" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="天"
+                android:textColor="@color/textdgray"
+                android:textSize="47dip" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="#000"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_tabMain"
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:layout_weight="1"
+            android:background="@color/themedark"
+            android:gravity="center"
+            android:text="闹钟"
+            android:textColor="@color/textwhite"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/btn_tabAnalytics"
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:layout_weight="1"
+            android:background="@drawable/gradient_darkblue"
+            android:gravity="center"
+            android:text="统计"
+            android:textColor="@color/textwhite"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/btn_tabSettings"
+            style="@style/FontShadow"
+            android:layout_width="fill_parent"
+            android:layout_height="40dip"
+            android:layout_weight="1"
+            android:background="@color/themedark"
+            android:gravity="center"
+            android:text="设定"
+            android:textColor="@color/textwhite"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+</RelativeLayout>
