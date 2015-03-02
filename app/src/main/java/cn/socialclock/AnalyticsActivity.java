@@ -22,6 +22,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AnalyticsActivity extends Activity implements OnClickListener {
 	public static final int DISTANCE = 12;
@@ -201,6 +202,7 @@ public class AnalyticsActivity extends Activity implements OnClickListener {
 			// animCount.setFillAfter(true);
 			// animCount.setDuration(1 * 1000);
 			// vColumn.startAnimation(animCount);
+            Toast.makeText(AnalyticsActivity.this, "in development", Toast.LENGTH_SHORT).show();
 		}
 
 	}

@@ -6,9 +6,6 @@ import cn.socialclock.db.AlarmTransaction;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.Utils;
 
-import weibo4android.Status;
-import weibo4android.Weibo;
-import weibo4android.WeiboException;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.util.Log;
@@ -52,19 +49,7 @@ public class GetUpAction {
 				+ "...我果然是个废物。(" + thisTransaction.getAlarm_date().toString()
 				+ ")";
 		Log.d("socialalarmlog", textGetupWeibo);
-		try {
-			Weibo weibo = new Weibo();
-			weibo.setToken(OAuthConstant.getInstance().getToken(),
-					OAuthConstant.getInstance().getTokenSecret());
-			Status status = weibo.updateStatus(textGetupWeibo);
-			Toast.makeText(context, "已上传微博", Toast.LENGTH_LONG).show();
-			System.out.println(status.getId() + " : " + status.getText() + "  "
-					+ status.getCreatedAt());
-
-		} catch (WeiboException e) {
-			e.printStackTrace();
-			Toast.makeText(context, "上传微博失败", Toast.LENGTH_LONG).show();
-		}
-
+        textGetupWeibo += "(send to sns)";
+        Toast.makeText(context, textGetupWeibo, Toast.LENGTH_LONG).show();
 	}
 }
