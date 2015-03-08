@@ -19,31 +19,31 @@ import android.widget.Toast;
 
 /**
  * @author mapler
- *	Main UI
+ * Main UI
  */
 public class MainActivity extends Activity implements OnClickListener {
 
-	private TextView textHour;
-	private TextView textMinute;
+    private TextView textHour;
+    private TextView textMinute;
 
-	private ClockSettings clockSettings;
+    private ClockSettings clockSettings;
 
     // to show the time set mode
-	private boolean isClockSettingModeOn;
+    private boolean isClockSettingModeOn;
 
-	private int hour;
-	private int minute;
-	private int ex_hour = 0;
-	private int ex_minute = 0;
+    private int hour;
+    private int minute;
+    private int ex_hour = 0;
+    private int ex_minute = 0;
 
-	private AlarmCreator alarmCreator;
+    private AlarmCreator alarmCreator;
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         /** Called when the activity is first created. */
         SocialClockLogger.log("MainActivity: onCreate start");
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
         // get setting preference
         clockSettings = new ClockSettings(this);
@@ -53,7 +53,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         // build ui
         buildInterface();
-	}
+    }
 
     private void buildInterface() {
 
@@ -141,9 +141,9 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     @Override
-	public void onClick(View v) {
+    public void onClick(View v) {
         /** handle all clickable elements' click events */
-		switch (v.getId()) {
+        switch (v.getId()) {
             case R.id.btn_sun:
             case R.id.btn_mon:
             case R.id.btn_tue:
@@ -156,7 +156,7 @@ public class MainActivity extends Activity implements OnClickListener {
             }
             case R.id.texthour:
             case R.id.textminute: {
-                onClickClickDial(v);
+                onClickClickDial();
                 break;
             }
             case R.id.btn_setClockOn: {
@@ -215,7 +215,7 @@ public class MainActivity extends Activity implements OnClickListener {
         clockSettings.setWeekdayFlag(weekDayFlag);
     }
 
-    private void onClickClickDial(View v) {
+    private void onClickClickDial() {
         /**
          * Handle dial onClick.
          * Switch time setting mode on/off.
@@ -279,27 +279,27 @@ public class MainActivity extends Activity implements OnClickListener {
         SocialClockLogger.log("MainActivity: set clock on");
     }
 
-	private void upHourTime() {
+    private void upHourTime() {
         /** handle adjust hour up */
         hour = hour < 23 ? (++hour) : 0;
-		textHour.setText(String.format("%02d", hour));
-	}
+        textHour.setText(String.format("%02d", hour));
+    }
 
-	private void downHourTime() {
+    private void downHourTime() {
         /** handle adjust hour down */
         hour = hour > 0 ? (--hour) : 23;
-		textHour.setText(String.format("%02d", hour));
-	}
+        textHour.setText(String.format("%02d", hour));
+    }
 
-	private void upMinuteTime() {
+    private void upMinuteTime() {
         /** handle adjust minute up */
         minute = minute < 59 ? (++minute) : 0;
-		textMinute.setText(String.format("%02d", minute));
-	}
+        textMinute.setText(String.format("%02d", minute));
+    }
 
-	private void downMinuteTime() {
+    private void downMinuteTime() {
         /** handle adjust minute down */
-		minute = minute > 0 ? (--minute) : 59;
-		textMinute.setText(String.format("%02d", minute));
-	}
+        minute = minute > 0 ? (--minute) : 59;
+        textMinute.setText(String.format("%02d", minute));
+    }
 }

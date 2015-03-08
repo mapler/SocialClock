@@ -16,48 +16,48 @@ import android.content.Intent;
 
 /**
  * @author mapler
- *	Alarm Creator
- *	1. update normal clock
- *	2. update snooze clock
- *	3. cancel clock
+ * Alarm Creator
+ *  1. update normal clock
+ *  2. update snooze clock
+ *  3. cancel clock
  */
 public class AlarmCreator {
 
     private ClockSettings clockSettings;
     private Context context;
-	private Intent alarmIntent;
-	private PendingIntent pendingIntent;
-	private AlarmManager alarmManager;
+    private Intent alarmIntent;
+    private PendingIntent pendingIntent;
+    private AlarmManager alarmManager;
 
-	public AlarmCreator(Context context) {
-		/** Init a AlarmCreator with a context */
-		this.context = context;
+    public AlarmCreator(Context context) {
+        /** Init a AlarmCreator with a context */
+        this.context = context;
         this.clockSettings = new ClockSettings(context);
-		this.alarmManager = (AlarmManager) context
-				.getSystemService(Context.ALARM_SERVICE);
-		this.alarmIntent = new Intent(context, AlarmReceiver.class);
-	}
+        this.alarmManager = (AlarmManager) context
+                .getSystemService(Context.ALARM_SERVICE);
+        this.alarmIntent = new Intent(context, AlarmReceiver.class);
+    }
 
-	public void updateSnoozeAlarm(long delayTime) {
-		// update(or create) a snooze alarm
+    public void updateSnoozeAlarm(long delayTime) {
+        // update(or create) a snooze alarm
         alarmIntent.putExtra(ConstantData.BundleArgs.ALARM_TYPE,
                 ConstantData.AlarmType.ALARM_SNOOZE);
-		pendingIntent = PendingIntent.getBroadcast(context, 0,
+        pendingIntent = PendingIntent.getBroadcast(context, 0,
                 alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		alarmManager.set(AlarmManager.RTC_WAKEUP, delayTime, pendingIntent);
-	}
+        alarmManager.set(AlarmManager.RTC_WAKEUP, delayTime, pendingIntent);
+    }
 
-	public void createNormalAlarm() {
+    public void createNormalAlarm() {
         // get settings
         int hour = clockSettings.getHour();
         int minute = clockSettings.getMinute();
 
         // make a time obj
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, hour);
-		calendar.set(Calendar.MINUTE, minute);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
         // get alarm time stamp
         long alarmTimeStamp = calendar.getTimeInMillis();
@@ -69,7 +69,7 @@ public class AlarmCreator {
         // update(or create) a normal alarm
         alarmIntent.putExtra(ConstantData.BundleArgs.ALARM_TYPE,
                 ConstantData.AlarmType.ALARM_NORMAL);
-		pendingIntent = PendingIntent.getBroadcast(context, 0,
+        pendingIntent = PendingIntent.getBroadcast(context, 0,
                 alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, alarmTimeStamp, pendingIntent);
 
@@ -77,12 +77,12 @@ public class AlarmCreator {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SocialClockLogger.log("AlarmCreator: clockTime is set at "
                 + (dateFormat.format(new Date(alarmTimeStamp))));
-	}
+    }
 
-	public void cancelAlarm(){
+    public void cancelAlarm(){
         // cancel a alarm intent
-		pendingIntent = PendingIntent.getBroadcast(context, 0,
+        pendingIntent = PendingIntent.getBroadcast(context, 0,
                 alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		alarmManager.cancel(pendingIntent);
-	}
+        alarmManager.cancel(pendingIntent);
+    }
 }
