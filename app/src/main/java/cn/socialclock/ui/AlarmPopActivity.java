@@ -1,11 +1,14 @@
-package cn.socialclock;
+package cn.socialclock.ui;
 
 import java.sql.Time;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cn.socialclock.GetUpAction;
+import cn.socialclock.R;
 import cn.socialclock.db.AlarmTransaction;
 import cn.socialclock.db.SnoozeTime;
+import cn.socialclock.model.AlarmCreator;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.Utils;
 
@@ -34,7 +37,7 @@ import android.widget.Toast;
  *         6.1停止响铃 6.2新建日常闹钟 6.3取消通知栏信息 6.4存储起床数据，写入数据库 7.五分钟后自动停止闹铃 8.禁用返回键
  * 
  */
-public class AlarmPop extends Activity {
+public class AlarmPopActivity extends Activity {
 
 	private Button btnNooze;
 	private Button btnGetup;
@@ -57,7 +60,7 @@ public class AlarmPop extends Activity {
 
 		/* 初始化 */
 		clockSettings = getSharedPreferences("ClockSettings", MODE_PRIVATE);
-		alarmCreator = new AlarmCreator(AlarmPop.this);
+		alarmCreator = new AlarmCreator(AlarmPopActivity.this);
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		/* 取消掉当前notification */
@@ -116,7 +119,7 @@ public class AlarmPop extends Activity {
 						* 60 * 1000;
 				alarmCreator.createDelayAlarm(snoozetime);
 				Time snoozealarm = new Time(snoozetime);
-				Toast.makeText(AlarmPop.this,
+				Toast.makeText(AlarmPopActivity.this,
 						"Snooze " + snoozetimelong + " minutes",
 						Toast.LENGTH_LONG).show();
 				Log.d("socialalarmlog", "AlarmPop: " + "SnoozeAlarm at "
@@ -128,7 +131,7 @@ public class AlarmPop extends Activity {
 						R.drawable.alarm_notification_icon, tickerText, System
 								.currentTimeMillis());
 				CharSequence notificationTitle = "SocialAlarm";
-				Intent notificationIntent = new Intent(AlarmPop.this,
+				Intent notificationIntent = new Intent(AlarmPopActivity.this,
 						NotificationTouchAction.class);
 
 				CharSequence notificationText = "Snooze to "
@@ -136,7 +139,7 @@ public class AlarmPop extends Activity {
 						+ Utils.timeFormat(snoozealarm.getMinutes())
 						+ ", Touch to cancel";
 				PendingIntent contentIntent = PendingIntent.getActivity(
-						AlarmPop.this, ConstantData.AlarmType.ALARM_SNOOZE,
+						AlarmPopActivity.this, ConstantData.AlarmType.ALARM_SNOOZE,
 						notificationIntent, 0);
 				notification.setLatestEventInfo(getApplicationContext(),
 						notificationTitle, notificationText, contentIntent);
@@ -151,9 +154,9 @@ public class AlarmPop extends Activity {
 				g_thisTransaction.upperSnooze_times();
 				SnoozeTime thisSnoozeTime = new SnoozeTime(transaction_id
 						+ daytimes, g_thisTransaction.getSnooze_times(), now);
-				thisSnoozeTime.insertToDb(AlarmPop.this);
+				thisSnoozeTime.insertToDb(AlarmPopActivity.this);
 
-				AlarmPop.this.finish();
+				AlarmPopActivity.this.finish();
 			}
 		});
 
@@ -165,9 +168,9 @@ public class AlarmPop extends Activity {
 				mpRingtone.stop();
 
 				/* 起床动作 */
-				GetUpAction.doAction(AlarmPop.this);
+				GetUpAction.doAction(AlarmPopActivity.this);
 
-				AlarmPop.this.finish();
+				AlarmPopActivity.this.finish();
 			}
 		});
 
@@ -201,6 +204,6 @@ public class AlarmPop extends Activity {
 	}
 
 	public static void setThisTransaction(AlarmTransaction thisTransaction) {
-		AlarmPop.g_thisTransaction = thisTransaction;
+		AlarmPopActivity.g_thisTransaction = thisTransaction;
 	}
 }

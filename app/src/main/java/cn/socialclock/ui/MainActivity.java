@@ -1,5 +1,7 @@
-package cn.socialclock;
+package cn.socialclock.ui;
 
+import cn.socialclock.R;
+import cn.socialclock.model.AlarmCreator;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.utils.SocialClockLogger;
 
@@ -189,7 +191,7 @@ public class MainActivity extends Activity implements OnClickListener {
             }
             case R.id.btn_tabSettings: {
                 /** direct to settings view */
-                Intent switchTabSettings = new Intent(this, Settings.class);
+                Intent switchTabSettings = new Intent(this, SettingsActivity.class);
                 startActivity(switchTabSettings);
                 break;
             }

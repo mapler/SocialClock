@@ -1,7 +1,9 @@
-package cn.socialclock;
+package cn.socialclock.receiver;
 
 import java.util.Date;
 
+import cn.socialclock.model.AlarmCreator;
+import cn.socialclock.ui.AlarmPopActivity;
 import cn.socialclock.utils.ConstantData;
 
 
@@ -41,7 +43,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 			/* 如果是Snooze闹钟或者今天是闹钟日 */
 			Log.d("socialalarmlog",
 					"AlarmReceiver: alarmed at " + now.toLocaleString());
-			Intent popup = new Intent(context, AlarmPop.class);
+			Intent popup = new Intent(context, AlarmPopActivity.class);
 			popup.putExtra("alarmtype", alarmtype);
 			popup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
 					| Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);

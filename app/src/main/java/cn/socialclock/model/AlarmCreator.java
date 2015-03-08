@@ -1,10 +1,10 @@
-package cn.socialclock;
+package cn.socialclock.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import cn.socialclock.model.ClockSettings;
+import cn.socialclock.receiver.AlarmReceiver;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.SocialClockLogger;
 

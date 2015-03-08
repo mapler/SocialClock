@@ -1,9 +1,11 @@
-package cn.socialclock;
+package cn.socialclock.ui;
 
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+
+import cn.socialclock.GetUpAction;
 
 /**
  * @author mapler

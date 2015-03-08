@@ -1,9 +1,10 @@
-package cn.socialclock;
+package cn.socialclock.ui;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.util.ArrayList;
 
+import cn.socialclock.R;
 import cn.socialclock.db.AlarmTransaction;
 import cn.socialclock.utils.StyleUtils;
 
@@ -218,7 +219,7 @@ public class AnalyticsActivity extends Activity implements OnClickListener {
 		}
 		case R.id.btn_tabSettings: {
 			Intent switchTabMain = new Intent(AnalyticsActivity.this,
-					Settings.class);
+					SettingsActivity.class);
 			AnalyticsActivity.this.startActivity(switchTabMain);
 			break;
 		}
