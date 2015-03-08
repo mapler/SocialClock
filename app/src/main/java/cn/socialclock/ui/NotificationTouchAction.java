@@ -14,13 +14,13 @@ import cn.socialclock.GetUpAction;
 
 public class NotificationTouchAction extends Activity {
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		Log.d("socialalarmlog", "NotificationAction: onCreate");
-		
-		GetUpAction.doAction(NotificationTouchAction.this);
-		
-		this.finish();
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("socialalarmlog", "NotificationAction: onCreate");
+
+        GetUpAction.doAction(NotificationTouchAction.this);
+
+        this.finish();
+    }
 }
