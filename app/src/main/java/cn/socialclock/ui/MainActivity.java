@@ -107,7 +107,7 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         }
 
-        // buttons register
+        /* buttons register */
         Button btn_Week_Sun = (Button) findViewById(R.id.btn_sun);
         btn_Week_Sun.setOnClickListener(this);
         Button btn_Week_Mon = (Button) findViewById(R.id.btn_mon);
@@ -184,13 +184,13 @@ public class MainActivity extends Activity implements OnClickListener {
                 break;
             }
             case R.id.btn_tabAnalytics: {
-                /** direct to analytics view */
+                /* direct to analytics view */
                 Intent switchTabAnalytics = new Intent(this, AnalyticsActivity.class);
                 startActivity(switchTabAnalytics);
                 break;
             }
             case R.id.btn_tabSettings: {
-                /** direct to settings view */
+                /* direct to settings view */
                 Intent switchTabSettings = new Intent(this, SettingsActivity.class);
                 startActivity(switchTabSettings);
                 break;
@@ -237,6 +237,16 @@ public class MainActivity extends Activity implements OnClickListener {
             // saved the past value for checking if is modified
             ex_hour = hour;
             ex_minute = minute;
+
+            /* buttons register */
+            Button btn_clockHourUp = (Button)findViewById(R.id.btn_clockhourup);
+            btn_clockHourUp.setOnClickListener(this);
+            Button btn_clockHourDown = (Button)findViewById(R.id.btn_clockhourdown);
+            btn_clockHourDown.setOnClickListener(this);
+            Button btn_clockMinuteUp = (Button)findViewById(R.id.btn_clockminuteup);
+            btn_clockMinuteUp.setOnClickListener(this);
+            Button btn_clockMinuteDown = (Button)findViewById(R.id.btn_clockminutedown);
+            btn_clockMinuteDown.setOnClickListener(this);
 
             // set setting mode on
             isClockSettingModeOn = true;
