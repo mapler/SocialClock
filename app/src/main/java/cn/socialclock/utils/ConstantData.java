@@ -3,7 +3,7 @@ package cn.socialclock.utils;
 public class ConstantData {
 	
 	public static class ConstantTime {
-		public static final long TIME_OF_DAY = 24 * 60 * 60 * 1000; // 一天的毫秒数
+		public static final long MILLIS_OF_DAY = 24 * 60 * 60 * 1000; // milliseconds of one day
 		public static final int RINGTONES_LONG = 5 * 60 * 1000; // 持续响铃时限
 	}
 
@@ -15,4 +15,12 @@ public class ConstantData {
 	public static class Graphy {
 		public static final int DISTANCE = 12;
 	}
+
+    public static class BundleArgs {
+        public static final String ALARM_TYPE = "alarm_type";
+    }
+
+    public static class Logger {
+        static final String LOG_TAG = "social_clock";
+    }
 }

@@ -1,15 +1,13 @@
 package cn.socialclock;
 
-import cn.socialclock.utils.Utils;
+import cn.socialclock.model.ClockSettings;
+import cn.socialclock.utils.SocialClockLogger;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -19,281 +17,287 @@ import android.widget.Toast;
 
 /**
  * @author mapler
- *	主界面
+ *	Main UI
  */
-public class MainActivity extends Activity implements OnClickListener,
-		OnSharedPreferenceChangeListener {
-	/** Called when the activity is first created. */
+public class MainActivity extends Activity implements OnClickListener {
 
-	private Button btn_Week_Mon;
-	private Button btn_Week_Tue;
-	private Button btn_Week_Wed;
-	private Button btn_Week_Thu;
-	private Button btn_Week_Fri;
-	private Button btn_Week_Sat;
-	private Button btn_Week_Sun;
-	
-	private Button btn_setClockOn;
-	private Button btn_setClockOff;
-	
-	private Button btn_tabAnalytics;
-	private Button btn_tabSettings;
+	private TextView textHour;
+	private TextView textMinute;
 
-	private TextView txHour;
-	private TextView txMinutes;
+	private ClockSettings clockSettings;
 
-	private SharedPreferences clockSettings;
-	private SharedPreferences.Editor clockSettingsEditor;
-
-	private boolean isClockSettingButtonVisable = false; // 时间调节按钮组显示与否
+    // to show the time set mode
+	private boolean isClockSettingModeOn;
 
 	private int hour;
-	private int minutes;
-	private int exhour = 0;
-	private int exminutes = 0;
+	private int minute;
+	private int ex_hour = 0;
+	private int ex_minute = 0;
 
-	private AlarmCreator alarmcreator;
+	private AlarmCreator alarmCreator;
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
+        /** Called when the activity is first created. */
+        SocialClockLogger.log("MainActivity: onCreate start");
+
 		super.onCreate(savedInstanceState);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		Log.d("socialalarmlog", "MainActivity: onCreate");
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.main);
 
-		clockSettings = getSharedPreferences("ClockSettings", MODE_PRIVATE);
-		clockSettingsEditor = clockSettings.edit();
-		if (!clockSettings.contains("snoozetime")) {
-			clockSettingsEditor.putInt("hour", 7);
-			clockSettingsEditor.putInt("minutes", 30);
-			clockSettingsEditor.putInt("daysofweek", 62);
-			clockSettingsEditor.putBoolean("enable", true);
-			clockSettingsEditor.putInt("snoozetime", 10);
-			clockSettingsEditor.commit();
-		}
+        // get setting preference
+        clockSettings = new ClockSettings(this);
 
-		/* 各种初始化 */
-		alarmcreator = new AlarmCreator(this);
+        // alarm creator init
+        alarmCreator = new AlarmCreator(this);
 
-		hour = clockSettings.getInt("hour", 0);
-		minutes = clockSettings.getInt("minutes", 0);
-		TextView textHour = (TextView) findViewById(R.id.texthour);
-		textHour.setText(Utils.timeFormat(hour));
-		textHour.setOnClickListener(this);
-		TextView textMinutes = (TextView) findViewById(R.id.textminutes);
-		textMinutes.setText(Utils.timeFormat(minutes));
-		textMinutes.setOnClickListener(this);
-
-		updateWeekdaysColor(); // 更新星期字体颜色
-
-		/* 实验broadcast用 */
-//		TextView txTitle = (TextView) findViewById(R.id.texttitle);
-//		txTitle.setOnClickListener(this);
-
-		/* Buttons Register */
-		btn_Week_Sun = (Button) findViewById(R.id.btn_sun);
-		btn_Week_Sun.setOnClickListener(this);
-		btn_Week_Mon = (Button) findViewById(R.id.btn_mon);
-		btn_Week_Mon.setOnClickListener(this);
-		btn_Week_Tue = (Button) findViewById(R.id.btn_tue);
-		btn_Week_Tue.setOnClickListener(this);
-		btn_Week_Wed = (Button) findViewById(R.id.btn_wed);
-		btn_Week_Wed.setOnClickListener(this);
-		btn_Week_Thu = (Button) findViewById(R.id.btn_thu);
-		btn_Week_Thu.setOnClickListener(this);
-		btn_Week_Fri = (Button) findViewById(R.id.btn_fri);
-		btn_Week_Fri.setOnClickListener(this);
-		btn_Week_Sat = (Button) findViewById(R.id.btn_sat);
-		btn_Week_Sat.setOnClickListener(this);
-		btn_setClockOn = (Button) findViewById(R.id.btn_setClockOn);
-		btn_setClockOn.setOnClickListener(this);
-		btn_setClockOff = (Button) findViewById(R.id.btn_setClockOff);
-		btn_setClockOff.setOnClickListener(this);
-		btn_tabAnalytics = (Button)findViewById(R.id.btn_tabAnalytics);
-		btn_tabAnalytics.setOnClickListener(this);
-		btn_tabSettings = (Button)findViewById(R.id.btn_tabSettings);
-		btn_tabSettings.setOnClickListener(this);
+        // build ui
+        buildInterface();
 	}
 
-	@Override
+    private void buildInterface() {
+
+        // set screen orientation portrait
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        // set title off
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // set view layout
+        setContentView(R.layout.main);
+
+        // build clock dial interface
+        buildClockDialInterface();
+
+        // weekday init
+        buildWeekdaySettingInterface();
+
+        // build clock on/off init
+        buildOnOffButton();
+
+        // build tab menu init
+        buildTabMenuButton();
+    }
+
+    private void buildClockDialInterface() {
+
+        // hour init
+        hour = clockSettings.getHour();
+        textHour = (TextView) findViewById(R.id.texthour);
+        textHour.setText(String.format("%02d", hour));
+        textHour.setOnClickListener(this);
+
+        // minute init
+        minute = clockSettings.getMinute();
+        textMinute = (TextView) findViewById(R.id.textminute);
+        textMinute.setText(String.format("%02d", minute));
+        textMinute.setOnClickListener(this);
+
+        // init setting mode, off
+        isClockSettingModeOn = false;
+    }
+
+    private void buildWeekdaySettingInterface() {
+        /** use binary value to store and set weekday on/off */
+        int weekdayFlag = clockSettings.getWeekdayFlag();
+        for (int days = 0; days < 7; ++days) {
+            Button weekDaysButton = (Button) findViewById(R.id.btn_sun + days);
+            if ((weekdayFlag | ((int) Math.pow(2, days))) == weekdayFlag) {
+                weekDaysButton.setTextColor(Color.WHITE);
+            } else {
+                weekDaysButton.setTextColor(getResources().getColor(R.color.textblue));
+            }
+        }
+
+        // buttons register
+        Button btn_Week_Sun = (Button) findViewById(R.id.btn_sun);
+        btn_Week_Sun.setOnClickListener(this);
+        Button btn_Week_Mon = (Button) findViewById(R.id.btn_mon);
+        btn_Week_Mon.setOnClickListener(this);
+        Button btn_Week_Tue = (Button) findViewById(R.id.btn_tue);
+        btn_Week_Tue.setOnClickListener(this);
+        Button btn_Week_Wed = (Button) findViewById(R.id.btn_wed);
+        btn_Week_Wed.setOnClickListener(this);
+        Button btn_Week_Thu = (Button) findViewById(R.id.btn_thu);
+        btn_Week_Thu.setOnClickListener(this);
+        Button btn_Week_Fri = (Button) findViewById(R.id.btn_fri);
+        btn_Week_Fri.setOnClickListener(this);
+        Button btn_Week_Sat = (Button) findViewById(R.id.btn_sat);
+        btn_Week_Sat.setOnClickListener(this);
+    }
+
+    private void buildOnOffButton() {
+        /** on/off button init */
+        Button btn_setClockOn = (Button) findViewById(R.id.btn_setClockOn);
+        btn_setClockOn.setOnClickListener(this);
+        Button btn_setClockOff = (Button) findViewById(R.id.btn_setClockOff);
+        btn_setClockOff.setOnClickListener(this);
+    }
+
+    private void buildTabMenuButton() {
+        /** tab menu init */
+        Button btn_tabAnalytics = (Button)findViewById(R.id.btn_tabAnalytics);
+        btn_tabAnalytics.setOnClickListener(this);
+        Button btn_tabSettings = (Button)findViewById(R.id.btn_tabSettings);
+        btn_tabSettings.setOnClickListener(this);
+    }
+
+    @Override
 	public void onClick(View v) {
+        /** handle all clickable elements' click events */
 		switch (v.getId()) {
-		case R.id.btn_sun:
-		case R.id.btn_mon:
-		case R.id.btn_tue:
-		case R.id.btn_wed:
-		case R.id.btn_thu:
-		case R.id.btn_fri:
-		case R.id.btn_sat: {
-			/* 星期按钮动作 */
-			TextView clickedButton = (TextView) v;
-			int daysofweek = (int) Math.pow(2, v.getId() - R.id.btn_sun);
-			int weekdayssetting = clockSettings.getInt("daysofweek", 62);// 62为默认工作日闹铃
-			if ((weekdayssetting | daysofweek) == weekdayssetting) {
-				clickedButton.setTextColor(R.color.textblue);
-			} else {
-				clickedButton.setTextColor(Color.WHITE);
-			}
-			weekdayssetting = weekdayssetting ^ daysofweek;
-			clockSettingsEditor.putInt("daysofweek", weekdayssetting).commit();
-			break;
-		}
-		case R.id.texthour:
-		case R.id.textminutes: {
-			/* 时间TextView动作 */
-			View tableWeek = (View) findViewById(R.id.table_week);
-			View layoutBtnUp = (View) findViewById(R.id.buttonupgroup);
-			View layoutBtnDown = (View) findViewById(R.id.buttondowngroup);
-			txHour = (TextView) findViewById(R.id.texthour);
-			txMinutes = (TextView) findViewById(R.id.textminutes);
-			if (isClockSettingButtonVisable == false) {
-				/* 隐藏星期层 */
-				tableWeek.postInvalidate();
-				tableWeek.setVisibility(View.INVISIBLE);
-				/* 显示时间调节按钮 */
-				layoutBtnUp.setVisibility(View.VISIBLE);
-				layoutBtnDown.setVisibility(View.VISIBLE);
-				/* 判断是否有过修改 */
-				exhour = hour;
-				exminutes = minutes;
+            case R.id.btn_sun:
+            case R.id.btn_mon:
+            case R.id.btn_tue:
+            case R.id.btn_wed:
+            case R.id.btn_thu:
+            case R.id.btn_fri:
+            case R.id.btn_sat: {
+                onClickWeekdays(v);
+                break;
+            }
+            case R.id.texthour:
+            case R.id.textminute: {
+                onClickClickDial(v);
+                break;
+            }
+            case R.id.btn_setClockOn: {
+                onClickClockOn();
+                break;
+            }
+            case R.id.btn_setClockOff: {
+                onCLickClockOff();
+                break;
+            }
+            case R.id.btn_clockhourup: {
+                upHourTime();
+                break;
+            }
+            case R.id.btn_clockhourdown: {
+                downHourTime();
+                break;
+            }
+            case R.id.btn_clockminuteup: {
+                upMinuteTime();
+                break;
+            }
+            case R.id.btn_clockminutedown: {
+                downMinuteTime();
+                break;
+            }
+            case R.id.btn_tabAnalytics: {
+                /** direct to analytics view */
+                Intent switchTabAnalytics = new Intent(this, AnalyticsActivity.class);
+                startActivity(switchTabAnalytics);
+                break;
+            }
+            case R.id.btn_tabSettings: {
+                /** direct to settings view */
+                Intent switchTabSettings = new Intent(this, Settings.class);
+                startActivity(switchTabSettings);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
 
-				isClockSettingButtonVisable = true;
-				Button btnHourUp = (Button) findViewById(R.id.btn_clockhourup);
-				Button btnHourDown = (Button) findViewById(R.id.btn_clockhourdown);
-				Button btnMinutesUp = (Button) findViewById(R.id.btn_clockminutesup);
-				Button btnMinutesDown = (Button) findViewById(R.id.btn_clockminutesdown);
-				btnHourUp.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						upHourTime();
-					}
-				});
-				btnHourUp
-						.setOnLongClickListener(new View.OnLongClickListener() {
+    private void onClickWeekdays(View v) {
+        /** weekday settings with binary compare */
+        TextView clickedButton = (TextView) v;
+        int dayClicked = (int) Math.pow(2, v.getId() - R.id.btn_sun);
+        int weekDayFlag = clockSettings.getWeekdayFlag();
+        if ((weekDayFlag | dayClicked) == weekDayFlag) {
+            clickedButton.setTextColor(getResources().getColor(R.color.textblue));
+        } else {
+            clickedButton.setTextColor(Color.WHITE);
+        }
+        weekDayFlag = weekDayFlag ^ dayClicked;
+        clockSettings.setWeekdayFlag(weekDayFlag);
+    }
 
-							@Override
-							public boolean onLongClick(View v) {
-								// TODO Auto-generated method stub
-								return false;
-							}
+    private void onClickClickDial(View v) {
+        /**
+         * Handle dial onClick.
+         * Switch time setting mode on/off.
+         */
 
-						});
-				btnHourDown.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						downHourTime();
-					}
-				});
-				btnMinutesUp.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						upMinutesTime();
-					}
-				});
-				btnMinutesDown.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						downMinutesTime();
-					}
-				});
-			} else {
-				/* 隐藏时间调节按钮 */
-				layoutBtnUp.setVisibility(View.INVISIBLE);
-				layoutBtnDown.setVisibility(View.INVISIBLE);
-				isClockSettingButtonVisable = false;
-				clockSettingsEditor.commit();
-				if ((hour != exhour) || (minutes != exminutes)) {
-					Toast.makeText(
-							this,
-							"AlarmTime is update to "
-									+ Utils.timeFormat(hour) + ":"
-									+ Utils.timeFormat(minutes),
-							Toast.LENGTH_LONG).show();
-				}
-				/* 显示星期层 */
-				tableWeek.postInvalidate();
-				tableWeek.setVisibility(View.VISIBLE);
-			}
-			break;
-		}
-		case R.id.btn_setClockOn: {
-			/* 开启闹钟 */
-			alarmcreator.createNormalAlarm();
-			Toast.makeText(this, "Alarm is set ON", Toast.LENGTH_LONG).show();
-			Log.d("socialalarmlog", "MainActivity: set clock on");
-			break;
-		}
-		case R.id.btn_setClockOff: {
-			/* 关闭闹钟 */
-			alarmcreator.cancelAlarm();
-			Toast.makeText(this, "Alarm is set OFF", Toast.LENGTH_LONG).show();
-			Log.d("socialalarmlog", "MainActivity: clock cancel");
-			break;
-		}
-			// case R.id.texttitle: {
-			// /* 手动发送一个broadcast(实验) */
-			// // intent = new Intent(this, AlarmReceiver.class);
-			// // intent.putExtra("daysofweek",
-			// // clockSettings.getInt("daysofweek", -1));
-			// // sendBroadcast(intent);
-			// break;
-			// }
-		case R.id.btn_tabAnalytics: {
-			Intent switchTabAnalytics = new Intent(MainActivity.this, AnalyticsActivity.class);
-			MainActivity.this.startActivity(switchTabAnalytics);
-			break;
-		}
-		case R.id.btn_tabSettings: {
-			Intent switchTabAnalytics = new Intent(MainActivity.this, Settings.class);
-			MainActivity.this.startActivity(switchTabAnalytics);
-			break;
-		}
-			// more buttons
-		}
+        View tableWeek = findViewById(R.id.table_week);
+        View layoutBtnUp = findViewById(R.id.buttonupgroup);
+        View layoutBtnDown = findViewById(R.id.buttondowngroup);
 
-	}
+        textHour = (TextView) findViewById(R.id.texthour);
+        textMinute = (TextView) findViewById(R.id.textminute);
+        if (!isClockSettingModeOn) {
+            // hide weekday setting
+            tableWeek.postInvalidate();
+            tableWeek.setVisibility(View.INVISIBLE);
+            // show time settings
+            layoutBtnUp.setVisibility(View.VISIBLE);
+            layoutBtnDown.setVisibility(View.VISIBLE);
+            // saved the past value for checking if is modified
+            ex_hour = hour;
+            ex_minute = minute;
 
-	/* 时间调整方法 */
+            // set setting mode on
+            isClockSettingModeOn = true;
+        } else {
+            // update settings
+            clockSettings.setHours(hour);
+            clockSettings.setMinute(minute);
+            if ((hour != ex_hour) || (minute != ex_minute)) {
+                String message = "AlarmTime is update to "
+                        + String.format("%02d", hour) + ":"
+                        + String.format("%02d", minute);
+                Toast.makeText(this, message,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            // hide time settings
+            layoutBtnUp.setVisibility(View.INVISIBLE);
+            layoutBtnDown.setVisibility(View.INVISIBLE);
+
+            // show weekday settings
+            tableWeek.postInvalidate();
+            tableWeek.setVisibility(View.VISIBLE);
+
+            // return from setting mode
+            isClockSettingModeOn = false;
+        }
+    }
+
+    private void onCLickClockOff() {
+        /** set clock off */
+        alarmCreator.cancelAlarm();
+        Toast.makeText(this, "Alarm is set OFF", Toast.LENGTH_SHORT).show();
+        SocialClockLogger.log("MainActivity: clock cancel");
+    }
+
+    private void onClickClockOn() {
+        /** set clock on */
+        alarmCreator.createNormalAlarm();
+        Toast.makeText(this, "Alarm is set ON", Toast.LENGTH_SHORT).show();
+        SocialClockLogger.log("MainActivity: set clock on");
+    }
+
 	private void upHourTime() {
-		clockSettingsEditor.putInt("hour", hour < 23 ? (++hour) : (hour = 0));
-		txHour.setText(Utils.timeFormat(hour));
+        /** handle adjust hour up */
+        hour = hour < 23 ? (++hour) : 0;
+		textHour.setText(String.format("%02d", hour));
 	}
 
 	private void downHourTime() {
-		clockSettingsEditor.putInt("hour", hour > 0 ? (--hour) : (hour = 23));
-		txHour.setText(Utils.timeFormat(hour));
+        /** handle adjust hour down */
+        hour = hour > 0 ? (--hour) : 23;
+		textHour.setText(String.format("%02d", hour));
 	}
 
-	private void upMinutesTime() {
-		clockSettingsEditor.putInt("minutes", minutes < 59 ? (++minutes)
-				: (minutes = 0));
-		txMinutes.setText(Utils.timeFormat(minutes));
+	private void upMinuteTime() {
+        /** handle adjust minute up */
+        minute = minute < 59 ? (++minute) : 0;
+		textMinute.setText(String.format("%02d", minute));
 	}
 
-	private void downMinutesTime() {
-		clockSettingsEditor.putInt("minutes", minutes > 0 ? (--minutes)
-				: (minutes = 59));
-		txMinutes.setText(Utils.timeFormat(minutes));
+	private void downMinuteTime() {
+        /** handle adjust minute down */
+		minute = minute > 0 ? (--minute) : 59;
+		textMinute.setText(String.format("%02d", minute));
 	}
-
-	/* 更新星期字体颜色 */
-	private void updateWeekdaysColor() {
-		int weekdayssetting = clockSettings.getInt("daysofweek", 31);
-		for (int days = 0; days < 7; ++days) {
-			Button daysButton = (Button) findViewById(R.id.btn_sun + days);
-			if ((weekdayssetting | ((int) Math.pow(2, days))) == weekdayssetting) {
-				daysButton.setTextColor(Color.WHITE);
-			} else {
-				daysButton.setTextColor(R.color.textblue);
-			}
-		}
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		// TODO preference改变时的动作
-	}
-
 }
