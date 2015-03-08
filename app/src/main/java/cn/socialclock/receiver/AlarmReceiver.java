@@ -1,59 +1,56 @@
 package cn.socialclock.receiver;
 
-import java.util.Date;
+import java.util.Calendar;
 
 import cn.socialclock.model.AlarmCreator;
+import cn.socialclock.model.ClockSettings;
 import cn.socialclock.ui.AlarmPopActivity;
 import cn.socialclock.utils.ConstantData;
-
+import cn.socialclock.utils.SocialClockLogger;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 /**
  * @author mapler
- *	闹钟Receiver
- *	有一个周日或者SNOOZE判断，	OK即弹出AlarmPop。
- *							否则建立下一个闹钟
+ *  Alarm Receiver
+ *  if today is alarm weekday or alarm is a snooze type
+ *  then do alarm
+ *  else create next alarm
  */
 public class AlarmReceiver extends BroadcastReceiver {
-    private SharedPreferences clockSettings;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("socialalarmlog", "AlarmReceiver: onReceive");
-		/* 初始化 */
-        clockSettings = context.getSharedPreferences("ClockSettings",
-                Context.MODE_PRIVATE);
-        int daysofweek = clockSettings.getInt("daysofweek", -1);
-        int alarmtype = intent.getIntExtra("alarmtype",
+        /** Called when receiving an Intent from alarm */
+        SocialClockLogger.log("AlarmReceiver: onReceive start");
+
+        ClockSettings clockSettings = new ClockSettings(context);
+
+        int alarmType = intent.getIntExtra(ConstantData.BundleArgs.ALARM_TYPE,
                 ConstantData.AlarmType.ALARM_NORMAL);
 
-        Date now = new Date(System.currentTimeMillis());
-        int todayofweek = (int) Math.pow(2, now.getDay());
-        Log.d("socialalarmlog", "AlarmReceiver: preferences>daysofweek = "
-                + daysofweek);
-        Log.d("socialalarmlog", "AlarmReceiver: todayofweek = " + todayofweek);
+        Calendar now = Calendar.getInstance();
 
-        if ((alarmtype == ConstantData.AlarmType.ALARM_SNOOZE)
-                || (daysofweek | todayofweek) == daysofweek) {
-			/* 如果是Snooze闹钟或者今天是闹钟日 */
-            Log.d("socialalarmlog",
-                    "AlarmReceiver: alarmed at " + now.toLocaleString());
-            Intent popup = new Intent(context, AlarmPopActivity.class);
-            popup.putExtra("alarmtype", alarmtype);
-            popup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+        int weekdayId = now.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY;
+        SocialClockLogger.log("AlarmReceiver: todayOfWeek = " + weekdayId);
+
+        if ((alarmType == ConstantData.AlarmType.ALARM_SNOOZE)
+                || (clockSettings.isWeekdayEnable(weekdayId))) {
+            /* if today is alarm weekday or alarm is a snooze type then do alarm */
+            SocialClockLogger.log("AlarmReceiver: alarmed at " + now.toString());
+
+            Intent popupIntent = new Intent(context, AlarmPopActivity.class);
+            popupIntent.putExtra(ConstantData.BundleArgs.ALARM_TYPE, alarmType);
+            popupIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-            context.startActivity(popup);
+            context.startActivity(popupIntent);
         } else {
-			/* 如果不是，则启动下一个Normal闹钟 */
-            Log.d("socialalarmlog",
-                    "AlarmReceiver: silence day, " + now.toLocaleString());
-            AlarmCreator alcreator = new AlarmCreator(context);
-            alcreator.createNormalAlarm();
+            /* else start next alarm */
+            SocialClockLogger.log("AlarmReceiver: silence day, " + now.toString());
+            AlarmCreator alarmCreator = new AlarmCreator(context);
+            alarmCreator.createNormalAlarm();
         }
     }
 }

@@ -3,9 +3,12 @@ package cn.socialclock.ui;
 import cn.socialclock.R;
 import cn.socialclock.model.AlarmCreator;
 import cn.socialclock.model.ClockSettings;
+import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.SocialClockLogger;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -16,6 +19,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 /**
  * @author mapler
@@ -97,10 +102,9 @@ public class MainActivity extends Activity implements OnClickListener {
 
     private void buildWeekdaySettingInterface() {
         /** use binary value to store and set weekday on/off */
-        int weekdayFlag = clockSettings.getWeekdayFlag();
-        for (int days = 0; days < 7; ++days) {
-            Button weekDaysButton = (Button) findViewById(R.id.btn_sun + days);
-            if ((weekdayFlag | ((int) Math.pow(2, days))) == weekdayFlag) {
+        for (int weekdayId = 0; weekdayId < Calendar.DAY_OF_WEEK; ++weekdayId) {
+            Button weekDaysButton = (Button) findViewById(R.id.btn_sun + weekdayId);
+            if (clockSettings.isWeekdayEnable(weekdayId)) {
                 weekDaysButton.setTextColor(Color.WHITE);
             } else {
                 weekDaysButton.setTextColor(getResources().getColor(R.color.textblue));
@@ -204,15 +208,13 @@ public class MainActivity extends Activity implements OnClickListener {
     private void onClickWeekdays(View v) {
         /** weekday settings with binary compare */
         TextView clickedButton = (TextView) v;
-        int dayClicked = (int) Math.pow(2, v.getId() - R.id.btn_sun);
-        int weekDayFlag = clockSettings.getWeekdayFlag();
-        if ((weekDayFlag | dayClicked) == weekDayFlag) {
+        int clickedWeekdayId = v.getId() - R.id.btn_sun;
+        if (clockSettings.isWeekdayEnable(clickedWeekdayId)) {
             clickedButton.setTextColor(getResources().getColor(R.color.textblue));
         } else {
             clickedButton.setTextColor(Color.WHITE);
         }
-        weekDayFlag = weekDayFlag ^ dayClicked;
-        clockSettings.setWeekdayFlag(weekDayFlag);
+        clockSettings.switchWeekdayEnable(clickedWeekdayId);
     }
 
     private void onClickClickDial() {
@@ -260,6 +262,14 @@ public class MainActivity extends Activity implements OnClickListener {
                         + String.format("%02d", minute);
                 Toast.makeText(this, message,
                         Toast.LENGTH_SHORT).show();
+
+                // start new alarm
+                alarmCreator.createNormalAlarm();
+
+                // cancel the snooze notification if exist
+                NotificationManager notificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(ConstantData.AlarmType.ALARM_SNOOZE);
             }
 
             // hide time settings

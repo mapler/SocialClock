@@ -63,17 +63,32 @@ public class ClockSettings {
         return this;
     }
 
-    public int getWeekdayFlag() {
+    private int getWeekdayFlag() {
         /** Get week day flag (int) from preference */
         // TODO, change weekDayFlag to an object with compare method
         return clockSettingsPreferences.getInt(KEY_WEEK_DAY_FLAG, defaultWeekdayFlag);
     }
 
-    public ClockSettings setWeekdayFlag(int weekdayFlag) {
+    private ClockSettings setWeekdayFlag(int weekdayFlag) {
         /** Set week day flag (int) to preference */
         clockSettingsEditor.putInt(KEY_WEEK_DAY_FLAG, weekdayFlag);
         clockSettingsEditor.commit();
         return this;
+    }
+
+    public boolean isWeekdayEnable(int weekdayId) {
+        /** check if weekday is enable with bitwise compare */
+        int binaryDayId = (int) Math.pow(2, weekdayId);
+        int weekDayFlag = getWeekdayFlag();
+        return (weekDayFlag | binaryDayId) == weekDayFlag;
+    }
+
+    public void switchWeekdayEnable(int weekdayId) {
+        /** switch weekday enable settings by bitwise XOR */
+        int binaryDayId = (int) Math.pow(2, weekdayId);
+        int weekDayFlag = getWeekdayFlag();
+        weekDayFlag = weekDayFlag ^ binaryDayId;
+        setWeekdayFlag(weekDayFlag);
     }
 
     public int getSnoozeTime() {
