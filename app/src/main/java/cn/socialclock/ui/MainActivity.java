@@ -1,14 +1,11 @@
 package cn.socialclock.ui;
 
 import cn.socialclock.R;
-import cn.socialclock.model.AlarmCreator;
+import cn.socialclock.manager.AlarmEventManager;
 import cn.socialclock.model.ClockSettings;
-import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.SocialClockLogger;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -41,11 +38,12 @@ public class MainActivity extends Activity implements OnClickListener {
     private int ex_hour = 0;
     private int ex_minute = 0;
 
-    private AlarmCreator alarmCreator;
+    private AlarmEventManager alarmEventManager;
+
+    private String currentEventAlarmId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        /** Called when the activity is first created. */
         SocialClockLogger.log("MainActivity: onCreate start");
 
         super.onCreate(savedInstanceState);
@@ -54,7 +52,7 @@ public class MainActivity extends Activity implements OnClickListener {
         clockSettings = new ClockSettings(this);
 
         // alarm creator init
-        alarmCreator = new AlarmCreator(this);
+        alarmEventManager = new AlarmEventManager(this);
 
         // build ui
         buildInterface();
@@ -100,8 +98,8 @@ public class MainActivity extends Activity implements OnClickListener {
         isClockSettingModeOn = false;
     }
 
+    /** use binary value to store and set weekday on/off */
     private void buildWeekdaySettingInterface() {
-        /** use binary value to store and set weekday on/off */
         for (int weekdayId = 0; weekdayId < Calendar.DAY_OF_WEEK; ++weekdayId) {
             Button weekDaysButton = (Button) findViewById(R.id.btn_sun + weekdayId);
             if (clockSettings.isWeekdayEnable(weekdayId)) {
@@ -128,25 +126,25 @@ public class MainActivity extends Activity implements OnClickListener {
         btn_Week_Sat.setOnClickListener(this);
     }
 
+    /** on/off button init */
     private void buildOnOffButton() {
-        /** on/off button init */
         Button btn_setClockOn = (Button) findViewById(R.id.btn_setClockOn);
         btn_setClockOn.setOnClickListener(this);
         Button btn_setClockOff = (Button) findViewById(R.id.btn_setClockOff);
         btn_setClockOff.setOnClickListener(this);
     }
 
+    /** tab menu init */
     private void buildTabMenuButton() {
-        /** tab menu init */
         Button btn_tabAnalytics = (Button)findViewById(R.id.btn_tabAnalytics);
         btn_tabAnalytics.setOnClickListener(this);
         Button btn_tabSettings = (Button)findViewById(R.id.btn_tabSettings);
         btn_tabSettings.setOnClickListener(this);
     }
 
+    /** handle all clickable elements' click events */
     @Override
     public void onClick(View v) {
-        /** handle all clickable elements' click events */
         switch (v.getId()) {
             case R.id.btn_sun:
             case R.id.btn_mon:
@@ -205,8 +203,8 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
+    /** weekday settings with binary compare */
     private void onClickWeekdays(View v) {
-        /** weekday settings with binary compare */
         TextView clickedButton = (TextView) v;
         int clickedWeekdayId = v.getId() - R.id.btn_sun;
         if (clockSettings.isWeekdayEnable(clickedWeekdayId)) {
@@ -217,12 +215,11 @@ public class MainActivity extends Activity implements OnClickListener {
         clockSettings.switchWeekdayEnable(clickedWeekdayId);
     }
 
+    /**
+     * Handle dial onClick.
+     * Switch time setting mode on/off.
+     */
     private void onClickClickDial() {
-        /**
-         * Handle dial onClick.
-         * Switch time setting mode on/off.
-         */
-
         View tableWeek = findViewById(R.id.table_week);
         View layoutBtnUp = findViewById(R.id.buttonupgroup);
         View layoutBtnDown = findViewById(R.id.buttondowngroup);
@@ -264,12 +261,8 @@ public class MainActivity extends Activity implements OnClickListener {
                         Toast.LENGTH_SHORT).show();
 
                 // start new alarm
-                alarmCreator.createNormalAlarm();
+                currentEventAlarmId = alarmEventManager.createNormalAlarm();
 
-                // cancel the snooze notification if exist
-                NotificationManager notificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.cancel(ConstantData.AlarmType.ALARM_SNOOZE);
             }
 
             // hide time settings
@@ -285,40 +278,45 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
+    /** set clock off */
     private void onCLickClockOff() {
-        /** set clock off */
-        alarmCreator.cancelAlarm();
+        if(currentEventAlarmId != null) {
+            alarmEventManager.cancelAlarm(currentEventAlarmId);
+        }
+        else {
+            alarmEventManager.cancelAlarm();
+        }
         Toast.makeText(this, "Alarm is set OFF", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: clock cancel");
     }
 
+    /** set clock on */
     private void onClickClockOn() {
-        /** set clock on */
-        alarmCreator.createNormalAlarm();
+        currentEventAlarmId = alarmEventManager.createNormalAlarm();
         Toast.makeText(this, "Alarm is set ON", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: set clock on");
     }
 
+    /** handle adjust hour up */
     private void upHourTime() {
-        /** handle adjust hour up */
         hour = hour < 23 ? (++hour) : 0;
         textHour.setText(String.format("%02d", hour));
     }
 
+    /** handle adjust hour down */
     private void downHourTime() {
-        /** handle adjust hour down */
         hour = hour > 0 ? (--hour) : 23;
         textHour.setText(String.format("%02d", hour));
     }
 
+    /** handle adjust minute up */
     private void upMinuteTime() {
-        /** handle adjust minute up */
         minute = minute < 59 ? (++minute) : 0;
         textMinute.setText(String.format("%02d", minute));
     }
 
+    /** handle adjust minute down */
     private void downMinuteTime() {
-        /** handle adjust minute down */
         minute = minute > 0 ? (--minute) : 59;
         textMinute.setText(String.format("%02d", minute));
     }

@@ -18,21 +18,22 @@ public class ClockSettings {
     private int defaultHour;
     private int defaultMinutes;
     private int defaultWeekdayFlag;
-    private int defaultSnoozeTime;
+    private int defaultSnoozeDuration;
     private boolean defaultIsEnable;
 
     public final String KEY_HOUR = "hour";
     public final String KEY_MINUTE = "minute";
     public final String KEY_WEEK_DAY_FLAG = "weekday_flag";
     public final String KEY_IS_ENABLE = "is_enable";
-    public final String KEY_SNOOZE_TIME = "snooze_time";
+    public final String KEY_SNOOZE_DURATION = "snooze_duration";
+    public final String KEY_USER_ID = "user_id";
 
     public ClockSettings(Context context) {
         /** Init a ClockSettings with a context */
         this.defaultHour = context.getResources().getInteger(R.integer.hour);
         this.defaultMinutes = context.getResources().getInteger(R.integer.minutes);
         this.defaultWeekdayFlag = context.getResources().getInteger(R.integer.weekdayFlag);
-        this.defaultSnoozeTime = context.getResources().getInteger(R.integer.snoozeTime);
+        this.defaultSnoozeDuration = context.getResources().getInteger(R.integer.snoozeDuration);
         this.defaultIsEnable = context.getResources().getBoolean(R.bool.isEnable);
 
         this.clockSettingsPreferences = context.getSharedPreferences("ClockSettings", Context.MODE_PRIVATE);
@@ -91,14 +92,14 @@ public class ClockSettings {
         setWeekdayFlag(weekDayFlag);
     }
 
-    public int getSnoozeTime() {
+    public int getSnoozeDuration() {
         /** Get snooze time (int) from preference */
-        return clockSettingsPreferences.getInt(KEY_SNOOZE_TIME, defaultSnoozeTime);
+        return clockSettingsPreferences.getInt(KEY_SNOOZE_DURATION, defaultSnoozeDuration);
     }
 
-    public ClockSettings setSnoozeTime(int snoozeTime) {
+    public ClockSettings setSnoozeDuration(int snoozeDuration) {
         /** Set snooze time (int) to preference */
-        clockSettingsEditor.putInt(KEY_SNOOZE_TIME, snoozeTime);
+        clockSettingsEditor.putInt(KEY_SNOOZE_DURATION, snoozeDuration);
         clockSettingsEditor.commit();
         return this;
     }
@@ -111,6 +112,20 @@ public class ClockSettings {
     public ClockSettings setIsEnable(int isEnable) {
         /** Set if enable (boolean) to preference */
         clockSettingsEditor.putInt(KEY_IS_ENABLE, isEnable);
+        clockSettingsEditor.commit();
+        return this;
+    }
+
+    public String getUserId() {
+        /** Get user Id */
+        // todo register module or get from sns id
+        String userId = clockSettingsPreferences.getString(KEY_USER_ID, "1");
+        return userId;
+    }
+
+    public ClockSettings setUserId(String userId) {
+        // todo register module or get from sns id
+        clockSettingsEditor.putString(KEY_USER_ID, userId);
         clockSettingsEditor.commit();
         return this;
     }

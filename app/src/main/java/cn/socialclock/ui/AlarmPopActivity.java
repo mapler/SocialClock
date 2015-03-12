@@ -1,30 +1,25 @@
 package cn.socialclock.ui;
 
-import java.sql.Time;
+
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cn.socialclock.GetUpAction;
 import cn.socialclock.R;
-import cn.socialclock.db.AlarmTransaction;
-import cn.socialclock.db.SnoozeTime;
-import cn.socialclock.model.AlarmCreator;
+import cn.socialclock.model.AlarmEvent;
+import cn.socialclock.manager.AlarmEventManager;
+import cn.socialclock.model.ClockSettings;
 import cn.socialclock.utils.ConstantData;
-import cn.socialclock.utils.Utils;
+import cn.socialclock.utils.SocialClockLogger;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -32,162 +27,166 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * @author mapler 1.建立UI 2.播放闹铃 3.取消通知栏信息 4.判断是否日常闹铃 是，则创建一个闹钟事务 5.snooze按钮
- *         5.1建立snooze闹钟 5.2建立snooze通知栏 5.3停止响铃 5.4存储snooze信息，写入数据库 6.起床按钮
- *         6.1停止响铃 6.2新建日常闹钟 6.3取消通知栏信息 6.4存储起床数据，写入数据库 7.五分钟后自动停止闹铃 8.禁用返回键
- *
+ * @author mapler
+ * Alarm Popup UI
+ * 1. build ui
+ * 2. cancel the notification
+ * 3. play the alarm ringtone
+ * 4. start record a alarm event if normal alarm
+ * 5. snooze clicked
+ *      5.1 stop play ringtone
+ *      5.2 create snooze alarm
+ *      5.3 create snooze notification
+ *      5.4 update once snooze to alarm event
+ * 6. get up clicked
+ *      6.1 stop play ringtone
+ *      6.2 create next alarm
+ *      6.3 finish alarm event
+ * 7. auto stop ringtone after 5 minutes
  */
 public class AlarmPopActivity extends Activity {
 
-    private Button btnNooze;
-    private Button btnGetup;
-    private SharedPreferences clockSettings;
+    private ClockSettings clockSettings;
     private NotificationManager notificationManager;
 
-    private AlarmCreator alarmCreator;
+    private AlarmEventManager alarmEventManager;
 
-    private int user_id = 1;	//暂时设定用户id为1
+    private Calendar nowCalendar;
 
-    private static AlarmTransaction g_thisTransaction;
+    private MediaPlayer ringtoneMediaPlayer;
 
-    private static int daytimes = 0;
+    private AlarmEvent currentAlarmEvent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d("socialalarmlog", "AlarmPop: onCreate");
-        setContentView(R.layout.alarmpop);
+        SocialClockLogger.log("AlarmPop: onCreate");
 
-		/* 初始化 */
-        clockSettings = getSharedPreferences("ClockSettings", MODE_PRIVATE);
-        alarmCreator = new AlarmCreator(AlarmPopActivity.this);
+        super.onCreate(savedInstanceState);
+
+        // get setting preference
+        clockSettings = new ClockSettings(this);
+
+        // alarm creator init
+        alarmEventManager = new AlarmEventManager(this);
+
+        // get notification service
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		/* 取消掉当前notification */
+        // cancel the snooze notification if exist
         notificationManager.cancel(ConstantData.AlarmType.ALARM_SNOOZE);
 
-		/* 显示闹钟时间 */
-        final Time now = new java.sql.Time(System.currentTimeMillis());
+        // get current time
+        nowCalendar = Calendar.getInstance();
 
-        final java.sql.Date nowdate = new java.sql.Date(
-                System.currentTimeMillis());
-        String nowhour = Utils.timeFormat(now.getHours());
-        String nowminutes = Utils.timeFormat(now.getMinutes());
-        TextView txTime = (TextView) findViewById(R.id.txClock);
-        txTime.setText("" + nowhour + ":" + nowminutes);
+        // get ringtone player
+        ringtoneMediaPlayer = new MediaPlayer();
 
-		/* 建立铃声播放器 */
-        final MediaPlayer mpRingtone = new MediaPlayer();
-        mpRingtone.setLooping(true);
-        Uri mediaUri = RingtoneManager
-                .getDefaultUri(RingtoneManager.TYPE_ALARM);
-        try {
-            Log.i("socialalarmlog", mediaUri.toString());
-            mpRingtone.setDataSource(this, mediaUri);
-            mpRingtone.setAudioStreamType(AudioManager.STREAM_ALARM);
-            mpRingtone.prepare();
-            mpRingtone.start();
-        } catch (Exception e) {
-            Log.e("socialalarmlog", e.toString());
-        }
+        int alarmType = this.getIntent().getIntExtra(ConstantData.BundleArgsName.ALARM_TYPE, 1);
+        String alarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
+        SocialClockLogger.log("AlarmPop: alarmType = " + alarmType + "alarmEventId = " + alarmEventId);
 
-        int alarmtype = this.getIntent().getIntExtra("alarmtype", 1);
-        Log.d("socialalarm", "AlarmPop: alarmtype = " + alarmtype
-                + " ALARM_NORMAL = 1, ALARM_SNOOZE = 2");
+        currentAlarmEvent = alarmEventManager.getAlarmEventById(alarmEventId);
 
-        final Integer transaction_id = ((nowdate.getYear() + 1900)) % 2000
-                * 1000000 + (nowdate.getMonth() + 1) * 10000
-                + nowdate.getDate() * 100 + user_id * 10;
-        Log.d("socialalarm", "AlarmPop: transaction_id = " + transaction_id);
+        // build ui
+        buildInterface();
 
-		/* 创建闹钟事务 */
-        if (alarmtype == ConstantData.AlarmType.ALARM_NORMAL) {
-            daytimes++;
-            g_thisTransaction = new AlarmTransaction(transaction_id + daytimes,
-                    user_id, nowdate, now, null, 0, 0);
-        }
+        // play alarm ringtone
+        playAlarmRingtone();
 
-        btnNooze = (Button) findViewById(R.id.btn_snooze);
-        btnGetup = (Button) findViewById(R.id.btn_wakeup);
-        btnNooze.setOnClickListener(new Button.OnClickListener() {
-            /* 贪睡按钮的处理 */
+    }
+
+    private void buildInterface() {
+        // set view layout
+        setContentView(R.layout.alarmpop);
+
+        // build time text
+        buildTimeTextInterface();
+
+        // build button
+        buildButtonInterface();
+    }
+
+    private void buildButtonInterface() {
+
+        Button btnSnooze = (Button) findViewById(R.id.btn_snooze);
+        Button btnGetup = (Button) findViewById(R.id.btn_wakeup);
+
+        btnSnooze.setOnClickListener(new Button.OnClickListener() {
+            /** snooze button */
             @Override
             public void onClick(View v) {
-				/* 建立延时snooze alarm */
-                int snoozetimelong = clockSettings.getInt("snoozetime", 0);
-                long snoozetime = System.currentTimeMillis() + snoozetimelong
-                        * 60 * 1000;
-                alarmCreator.createDelayAlarm(snoozetime);
-                Time snoozealarm = new Time(snoozetime);
+                alarmEventManager.updateSnoozeAlarm(currentAlarmEvent);
+                int snoozeDuration = clockSettings.getSnoozeDuration();
                 Toast.makeText(AlarmPopActivity.this,
-                        "Snooze " + snoozetimelong + " minutes",
-                        Toast.LENGTH_LONG).show();
-                Log.d("socialalarmlog", "AlarmPop: " + "SnoozeAlarm at "
-                        + snoozealarm.toLocaleString());
+                        "Snooze " + snoozeDuration + " minutes",
+                        Toast.LENGTH_SHORT).show();
 
-				/* 新建snooze notification */
-                CharSequence tickerText = "SocialAlarm";
-                Notification notification = new Notification(
-                        R.drawable.alarm_notification_icon, tickerText, System
-                        .currentTimeMillis());
-                CharSequence notificationTitle = "SocialAlarm";
-                Intent notificationIntent = new Intent(AlarmPopActivity.this,
-                        NotificationTouchAction.class);
-
-                CharSequence notificationText = "Snooze to "
-                        + Utils.timeFormat(snoozealarm.getHours()) + ":"
-                        + Utils.timeFormat(snoozealarm.getMinutes())
-                        + ", Touch to cancel";
-                PendingIntent contentIntent = PendingIntent.getActivity(
-                        AlarmPopActivity.this, ConstantData.AlarmType.ALARM_SNOOZE,
-                        notificationIntent, 0);
-                notification.setLatestEventInfo(getApplicationContext(),
-                        notificationTitle, notificationText, contentIntent);
-                // 把Notification传递给NotificationManager
-                notificationManager.notify(ConstantData.AlarmType.ALARM_SNOOZE,
-                        notification);
-
-				/* 停止响铃 */
-                mpRingtone.stop();
-
-				/* 存储snooze数据 */
-                g_thisTransaction.upperSnooze_times();
-                SnoozeTime thisSnoozeTime = new SnoozeTime(transaction_id
-                        + daytimes, g_thisTransaction.getSnooze_times(), now);
-                thisSnoozeTime.insertToDb(AlarmPopActivity.this);
+                // stop ringtone
+                ringtoneMediaPlayer.stop();
 
                 AlarmPopActivity.this.finish();
             }
         });
 
         btnGetup.setOnClickListener(new Button.OnClickListener() {
-            /* 起床按钮的处理 */
+            /** get up button */
             @Override
             public void onClick(View v) {
-				/* 停止响铃 */
-                mpRingtone.stop();
+                /* stop ringtone */
+                ringtoneMediaPlayer.stop();
 
-				/* 起床动作 */
-                GetUpAction.doAction(AlarmPopActivity.this);
+                /* get up action */
+                alarmEventManager.getUp(currentAlarmEvent);
 
                 AlarmPopActivity.this.finish();
             }
         });
-
-		/* RINGTONES_LONG时间(5分钟)后闹钟未响即自动停止响铃，之后可设定为可选 */
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                mpRingtone.stop();
-            }
-
-        }, ConstantData.ConstantTime.RINGTONES_LONG);
-
     }
 
-    /* 禁用返回键 */
+    /** build clock time text */
+    private void buildTimeTextInterface() {
+        String nowHour = String.format("%02d", nowCalendar.get(Calendar.HOUR));
+        String nowMinute = String.format("%02d", nowCalendar.get(Calendar.MINUTE));
+        TextView txTime = (TextView) findViewById(R.id.txClock);
+        txTime.setText(nowHour + ":" + nowMinute);
+    }
+
+    /** play the alarm ringtone */
+    private void playAlarmRingtone() {
+        // todo create a media player singleton class
+        // set player to loop
+        ringtoneMediaPlayer.setLooping(true);
+
+        // get default alarm ringtone uri
+        Uri mediaUri = RingtoneManager
+                .getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        try {
+            /* start player ringtone */
+            SocialClockLogger.log("Player Ringtone: " + mediaUri.toString());
+            ringtoneMediaPlayer.setDataSource(this, mediaUri);
+            ringtoneMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+            ringtoneMediaPlayer.prepare();
+            ringtoneMediaPlayer.start();
+        } catch (Exception e) {
+            /* if fail */
+            Toast.makeText(this, "Player Ringtone fail.", Toast.LENGTH_SHORT);
+            SocialClockLogger.log("Player Ringtone: Fail. " + e.toString());
+        }
+
+        /* auto stop after RINGTONE_DURATION */
+        Timer ringtoneTimer = new Timer();
+        ringtoneTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                ringtoneMediaPlayer.stop();
+            }
+        }, ConstantData.ConstantTime.RINGTONE_DURATION);
+    }
+
+    /** forbidden hard keys
+     * todo forbidden other buttons
+     * */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -197,13 +196,5 @@ public class AlarmPopActivity extends Activity {
             return false;
         }
         return false;
-    }
-
-    public static AlarmTransaction getThisTransaction() {
-        return g_thisTransaction;
-    }
-
-    public static void setThisTransaction(AlarmTransaction thisTransaction) {
-        AlarmPopActivity.g_thisTransaction = thisTransaction;
     }
 }

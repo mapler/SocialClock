@@ -36,7 +36,7 @@
         <activity
             android:theme="@android:style/Theme.NoDisplay"
             android:launchMode="singleTask"
-            android:name=".ui.NotificationTouchAction"
+            android:name=".ui.NotificationTouchActivity"
             android:screenOrientation="user" >
         </activity>
         <activity android:name=".ui.SettingsActivity">

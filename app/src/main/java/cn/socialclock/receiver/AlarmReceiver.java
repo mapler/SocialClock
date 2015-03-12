@@ -2,10 +2,11 @@ package cn.socialclock.receiver;
 
 import java.util.Calendar;
 
-import cn.socialclock.model.AlarmCreator;
+import cn.socialclock.manager.AlarmEventManager;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.ui.AlarmPopActivity;
 import cn.socialclock.utils.ConstantData;
+import cn.socialclock.utils.DatetimeFormatter;
 import cn.socialclock.utils.SocialClockLogger;
 
 import android.content.BroadcastReceiver;
@@ -23,13 +24,13 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        /** Called when receiving an Intent from alarm */
         SocialClockLogger.log("AlarmReceiver: onReceive start");
 
         ClockSettings clockSettings = new ClockSettings(context);
 
-        int alarmType = intent.getIntExtra(ConstantData.BundleArgs.ALARM_TYPE,
+        int alarmType = intent.getIntExtra(ConstantData.BundleArgsName.ALARM_TYPE,
                 ConstantData.AlarmType.ALARM_NORMAL);
+        String alarmEventId = intent.getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
 
         Calendar now = Calendar.getInstance();
 
@@ -39,18 +40,23 @@ public class AlarmReceiver extends BroadcastReceiver {
         if ((alarmType == ConstantData.AlarmType.ALARM_SNOOZE)
                 || (clockSettings.isWeekdayEnable(weekdayId))) {
             /* if today is alarm weekday or alarm is a snooze type then do alarm */
-            SocialClockLogger.log("AlarmReceiver: alarmed at " + now.toString());
+            SocialClockLogger.log("AlarmReceiver: alarmed at " + DatetimeFormatter.calendarToString(now));
 
+            /* start alarm popup activity */
             Intent popupIntent = new Intent(context, AlarmPopActivity.class);
-            popupIntent.putExtra(ConstantData.BundleArgs.ALARM_TYPE, alarmType);
+            popupIntent.putExtra(ConstantData.BundleArgsName.ALARM_TYPE, alarmType);
+            popupIntent.putExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID, alarmEventId);
             popupIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             context.startActivity(popupIntent);
         } else {
             /* else start next alarm */
             SocialClockLogger.log("AlarmReceiver: silence day, " + now.toString());
-            AlarmCreator alarmCreator = new AlarmCreator(context);
-            alarmCreator.createNormalAlarm();
+            AlarmEventManager alarmEventManager = new AlarmEventManager(context);
+            // cancel current Alarm Event
+            alarmEventManager.cancelAlarm(alarmEventId);
+            // create next Alarm
+            alarmEventManager.createNormalAlarm();
         }
     }
 }
