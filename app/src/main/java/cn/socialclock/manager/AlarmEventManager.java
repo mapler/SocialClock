@@ -1,6 +1,7 @@
 package cn.socialclock.manager;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 import cn.socialclock.R;
 import cn.socialclock.db.AlarmEventDatabaseHelper;
@@ -57,11 +58,39 @@ public class AlarmEventManager {
     }
 
     /**
+     * Generate an UUID of alarm event
+     * @return uuid String
+     */
+    private String genEventId() {
+        return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Get or new an alarm event from db
+     * @param alarmEventId String
+     * @param startAt Calendar
+     * @return AlarmEvent obj
+     */
+    public AlarmEvent startAlarmEvent(String alarmEventId, Calendar startAt) {
+        AlarmEvent alarmEvent = getAlarmEventById(alarmEventId);
+        /* init an alarm event if not exist */
+        if (alarmEvent == null){
+            String userId = clockSettings.getUserId();
+            alarmEvent = new AlarmEvent(alarmEventId, userId, startAt);
+            dbAdapter.insert(alarmEvent);
+        }
+        return alarmEvent;
+    }
+
+    /**
      * Update(or create) a snooze alarm
+     * 1. alarm event snooze times
+     * 2. set next snooze alarm with intent
+     * 3. cancel if any snooze notification
+     * 4. create new notification
      * @param currentAlarmEvent AlarmEvent
      */
     public void updateSnoozeAlarm(AlarmEvent currentAlarmEvent) {
-        //
 
         // update alarm event snooze time count up
         currentAlarmEvent.snoozeTimeCountUp();
@@ -75,14 +104,15 @@ public class AlarmEventManager {
 
         long snoozeTimeStamp = snoozeTime.getTimeInMillis();
 
-        // cancel snooze notification if has one
-        cancelNotification();
-
         // create alarm
-        createAlarm(currentAlarmEvent.getEventId(),
+        setAlarm(currentAlarmEvent.getEventId(),
                 ConstantData.AlarmType.ALARM_SNOOZE,
                 snoozeTimeStamp);
 
+        // cancel snooze notification if has one
+        cancelNotification();
+
+        // create next notification
         createNotification(currentAlarmEvent, snoozeTime);
 
         // write log
@@ -92,13 +122,16 @@ public class AlarmEventManager {
 
     /**
      * Create a normal alarm
-     * @return created alarm event id
+     * 1. read alarm time from preference settings
+     * 2. generate an alarm event id
+     * 2. set an alarm with intent
+     * 3. cancel if any snooze notification
+     * @return alarmEventId String
      */
     public String createNormalAlarm() {
         // get settings
         int hour = clockSettings.getHour();
         int minute = clockSettings.getMinute();
-        String userId = clockSettings.getUserId();
 
         // make a time obj
         Calendar alarmAt = Calendar.getInstance();
@@ -115,31 +148,35 @@ public class AlarmEventManager {
             alarmTimeStamp = alarmAt.getTimeInMillis();
         }
 
-        // cancel snooze notification if has one
-        cancelNotification();
+        // generate alarm event id
+        String currentAlarmEventId = genEventId();
+        // write log
+        SocialClockLogger.log("AlarmEventManager: createNormalAlarm: "
+                + "create event: " + currentAlarmEventId
+                + DatetimeFormatter.calendarToString(alarmAt));
 
-        // create an alarm event by userId and alarmAt
-        AlarmEvent alarmEvent = new AlarmEvent(userId, alarmAt);
-        // insert alarmEvent to db
-        dbAdapter.insert(alarmEvent);
-
-        // create alarm
-        createAlarm(alarmEvent.getEventId(),
+        // set an alarm
+        setAlarm(currentAlarmEventId,
                 ConstantData.AlarmType.ALARM_NORMAL,
                 alarmTimeStamp);
 
+        // cancel snooze notification if has one
+        cancelNotification();
+
         // write log
-        SocialClockLogger.log("AlarmEventManager: clockTime is set at "
+        SocialClockLogger.log("AlarmEventManager: createNormalAlarm: "
+                + "clock is set at "
                 + DatetimeFormatter.calendarToString(alarmAt));
-        return alarmEvent.getEventId();
+
+        return currentAlarmEventId;
     }
 
-    /** Create(or Update) a alarm
+    /** Set(or Update) a alarm
      * @param eventId String alarm event id
      * @param alarmType int alarm type
      * @param alarmTimeStamp long alarm time stamp
      */
-    private void createAlarm(String eventId, int alarmType, long alarmTimeStamp) {
+    private void setAlarm(String eventId, int alarmType, long alarmTimeStamp) {
         // bundle the alarmEventId
         alarmIntent.putExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID, eventId);
         // bundle alarm type

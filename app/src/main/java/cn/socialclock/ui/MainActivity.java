@@ -166,7 +166,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 break;
             }
             case R.id.btn_setClockOff: {
-                onCLickClockOff();
+                onClickClockOff();
                 break;
             }
             case R.id.btn_clockhourup: {
@@ -259,8 +259,9 @@ public class MainActivity extends Activity implements OnClickListener {
                         + String.format("%02d", minute);
                 Toast.makeText(this, message,
                         Toast.LENGTH_SHORT).show();
-
-                // start new alarm
+                // cancel current Alarm Event
+                alarmEventManager.cancelAlarm(currentEventAlarmId);
+                // start a new alarm
                 currentEventAlarmId = alarmEventManager.createNormalAlarm();
 
             }
@@ -279,13 +280,8 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     /** set clock off */
-    private void onCLickClockOff() {
-        if(currentEventAlarmId != null) {
-            alarmEventManager.cancelAlarm(currentEventAlarmId);
-        }
-        else {
-            alarmEventManager.cancelAlarm();
-        }
+    private void onClickClockOff() {
+        alarmEventManager.cancelAlarm(currentEventAlarmId);
         Toast.makeText(this, "Alarm is set OFF", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: clock cancel");
     }

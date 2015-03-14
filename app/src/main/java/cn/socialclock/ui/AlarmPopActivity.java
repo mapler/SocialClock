@@ -13,8 +13,6 @@ import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.SocialClockLogger;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -47,7 +45,6 @@ import android.widget.Toast;
 public class AlarmPopActivity extends Activity {
 
     private ClockSettings clockSettings;
-    private NotificationManager notificationManager;
 
     private AlarmEventManager alarmEventManager;
 
@@ -69,12 +66,6 @@ public class AlarmPopActivity extends Activity {
         // alarm creator init
         alarmEventManager = new AlarmEventManager(this);
 
-        // get notification service
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // cancel the snooze notification if exist
-        notificationManager.cancel(ConstantData.AlarmType.ALARM_SNOOZE);
-
         // get current time
         nowCalendar = Calendar.getInstance();
 
@@ -82,10 +73,10 @@ public class AlarmPopActivity extends Activity {
         ringtoneMediaPlayer = new MediaPlayer();
 
         int alarmType = this.getIntent().getIntExtra(ConstantData.BundleArgsName.ALARM_TYPE, 1);
-        String alarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
-        SocialClockLogger.log("AlarmPop: alarmType = " + alarmType + "alarmEventId = " + alarmEventId);
-
-        currentAlarmEvent = alarmEventManager.getAlarmEventById(alarmEventId);
+        String currentAlarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
+        SocialClockLogger.log("AlarmPop: alarmType = " + alarmType + ", currentAlarmEventId = " + currentAlarmEventId);
+        Calendar startAt = Calendar.getInstance();
+        currentAlarmEvent = alarmEventManager.startAlarmEvent(currentAlarmEventId, startAt);
 
         // build ui
         buildInterface();
@@ -111,8 +102,8 @@ public class AlarmPopActivity extends Activity {
         Button btnSnooze = (Button) findViewById(R.id.btn_snooze);
         Button btnGetup = (Button) findViewById(R.id.btn_wakeup);
 
+        /** snooze button */
         btnSnooze.setOnClickListener(new Button.OnClickListener() {
-            /** snooze button */
             @Override
             public void onClick(View v) {
                 alarmEventManager.updateSnoozeAlarm(currentAlarmEvent);
@@ -128,8 +119,8 @@ public class AlarmPopActivity extends Activity {
             }
         });
 
+        /** get up button */
         btnGetup.setOnClickListener(new Button.OnClickListener() {
-            /** get up button */
             @Override
             public void onClick(View v) {
                 /* stop ringtone */

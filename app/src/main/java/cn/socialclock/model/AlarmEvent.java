@@ -1,7 +1,6 @@
 package cn.socialclock.model;
 
 import java.util.Calendar;
-import java.util.UUID;
 
 /**
  * @author mapler
@@ -19,14 +18,14 @@ public class AlarmEvent {
 
     /**
      * constructor when create an alarm
+     * @param eventId String alarm event id
      * @param userId String user id
      * @param startAt Calendar alarmed time
      */
-    public AlarmEvent(String userId, Calendar startAt) {
-        this.eventId = this.genEventId();
+    public AlarmEvent(String eventId, String userId, Calendar startAt) {
+        this.eventId = eventId;
         this.userId = userId;
         this.startAt = startAt;
-        this.snoozeTimes = 0;
     }
 
     /**
@@ -54,10 +53,6 @@ public class AlarmEvent {
         this.snoozeTimes = snoozeTimes;
         this.syncAt = syncAt;
         this.deletedAt = deletedAt;
-    }
-
-    private String genEventId() {
-        return UUID.randomUUID().toString();
     }
 
     public String getEventId() {
