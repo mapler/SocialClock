@@ -83,6 +83,7 @@ public class AlarmEventDbAdapter {
             AlarmEvent alarmEvent = createAlarmEvent(cursor);
             alarmEventList.add(alarmEvent);
         }
+        cursor.close();
 
         return alarmEventList;
     }
@@ -90,7 +91,7 @@ public class AlarmEventDbAdapter {
     /**
      * select by event id
      * @param eventId String AlarmEvent eventId
-     * @return AlarmEvent
+     * @return AlarmEvent or null (if does not exist)
      */
     public AlarmEvent findByEventId(String eventId) {
         String selection = COLUMN_EVENT_ID + "='" + eventId + "'";
@@ -102,9 +103,17 @@ public class AlarmEventDbAdapter {
                 null,
                 null,
                 null);
-
-        cursor.moveToNext();
-        return createAlarmEvent(cursor);
+        AlarmEvent alarmEvent;
+        /* check if exist */
+        if (cursor.getCount() > 0) {
+            cursor.moveToNext();
+            alarmEvent = createAlarmEvent(cursor);
+        }
+        else {
+            alarmEvent = null;
+        }
+        cursor.close();
+        return alarmEvent;
     }
 
     /**
