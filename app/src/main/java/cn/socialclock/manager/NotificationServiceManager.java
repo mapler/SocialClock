@@ -14,14 +14,14 @@ import cn.socialclock.utils.ConstantData;
 
 /**
  * Created by mapler
- * Manage the notification.
+ * Manage the notification. (Old API)
  */
-public class AlarmNotificationManager {
+public class NotificationServiceManager {
 
     private Context context;
     private NotificationManager notificationManager;
 
-    protected AlarmNotificationManager(Context context) {
+    protected NotificationServiceManager(Context context) {
         this.context = context;
         this.notificationManager = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
@@ -35,7 +35,6 @@ public class AlarmNotificationManager {
     }
 
     /** Create a notification
-     * todo
      * @param alarmEventId String
      * @param snoozeTime Calendar
      * */

@@ -6,7 +6,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.socialclock.R;
-import cn.socialclock.model.AlarmEvent;
 import cn.socialclock.manager.SocialClockManager;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.utils.ConstantData;
@@ -27,20 +26,16 @@ import android.widget.Toast;
 /**
  * @author mapler
  * Alarm Popup UI
- * 1. build ui
- * 2. cancel the notification
+ * 1. start a alarm event if not snooze
+ * 2. build ui
  * 3. play the alarm ringtone
- * 4. start record a alarm event if normal alarm
- * 5. snooze clicked
+ * 4. snooze clicked
+ *      4.1 stop play ringtone
+ *      4.2 snooze alarm
+ * 5. get up clicked
  *      5.1 stop play ringtone
- *      5.2 create snooze alarm
- *      5.3 create snooze notification
- *      5.4 update once snooze to alarm event
- * 6. get up clicked
- *      6.1 stop play ringtone
- *      6.2 create next alarm
- *      6.3 finish alarm event
- * 7. auto stop ringtone after 5 minutes
+ *      5.2 get up
+ *      5.3 send sns
  */
 public class AlarmPopActivity extends Activity {
 
@@ -52,7 +47,7 @@ public class AlarmPopActivity extends Activity {
 
     private MediaPlayer ringtoneMediaPlayer;
 
-    private AlarmEvent currentAlarmEvent;
+    private String currentAlarmEventId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,10 +68,11 @@ public class AlarmPopActivity extends Activity {
         ringtoneMediaPlayer = new MediaPlayer();
 
         int alarmType = this.getIntent().getIntExtra(ConstantData.BundleArgsName.ALARM_TYPE, 1);
-        String currentAlarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
+        currentAlarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
         SocialClockLogger.log("AlarmPop: alarmType = " + alarmType + ", currentAlarmEventId = " + currentAlarmEventId);
-        Calendar startAt = Calendar.getInstance();
-        currentAlarmEvent = socialClockManager.startAlarmEvent(currentAlarmEventId, startAt);
+
+        // start alarm
+        socialClockManager.startAlarm(currentAlarmEventId);
 
         // build ui
         buildInterface();
@@ -106,14 +102,14 @@ public class AlarmPopActivity extends Activity {
         btnSnooze.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socialClockManager.updateSnoozeAlarm(currentAlarmEvent);
+                // stop ringtone
+                ringtoneMediaPlayer.stop();
+
+                socialClockManager.snoozeAlarm(currentAlarmEventId);
                 int snoozeDuration = clockSettings.getSnoozeDuration();
                 Toast.makeText(AlarmPopActivity.this,
                         "Snooze " + snoozeDuration + " minutes",
                         Toast.LENGTH_SHORT).show();
-
-                // stop ringtone
-                ringtoneMediaPlayer.stop();
 
                 AlarmPopActivity.this.finish();
             }
@@ -127,7 +123,10 @@ public class AlarmPopActivity extends Activity {
                 ringtoneMediaPlayer.stop();
 
                 /* get up action */
-                socialClockManager.getUp(currentAlarmEvent);
+                socialClockManager.getUp(currentAlarmEventId);
+
+                // sns
+                socialClockManager.sendSns(currentAlarmEventId);
 
                 AlarmPopActivity.this.finish();
             }

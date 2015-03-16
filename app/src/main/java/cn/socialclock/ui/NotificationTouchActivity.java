@@ -4,7 +4,6 @@ package cn.socialclock.ui;
 import android.app.Activity;
 import android.os.Bundle;
 
-import cn.socialclock.model.AlarmEvent;
 import cn.socialclock.manager.SocialClockManager;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.SocialClockLogger;
@@ -12,6 +11,8 @@ import cn.socialclock.utils.SocialClockLogger;
 /**
  * @author mapler
  * Action when click notification
+ * 1. get up
+ * 2. send sns
  */
 
 public class NotificationTouchActivity extends Activity {
@@ -26,10 +27,12 @@ public class NotificationTouchActivity extends Activity {
         SocialClockLogger.log("NotificationAction: onCreate: alarmEventId: " + alarmEventId);
 
         SocialClockManager socialClockManager = new SocialClockManager(this);
-        AlarmEvent currentAlarmEvent = socialClockManager.getAlarmEventById(alarmEventId);
 
         // get up action
-        socialClockManager.getUp(currentAlarmEvent);
+        socialClockManager.getUp(alarmEventId);
+
+        // sns
+        socialClockManager.sendSns(alarmEventId);
 
         this.finish();
     }
