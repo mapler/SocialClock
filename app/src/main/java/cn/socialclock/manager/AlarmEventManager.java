@@ -3,20 +3,16 @@ package cn.socialclock.manager;
 import java.util.Calendar;
 import java.util.UUID;
 
-import cn.socialclock.R;
 import cn.socialclock.db.AlarmEventDatabaseHelper;
 import cn.socialclock.db.AlarmEventDbAdapter;
 import cn.socialclock.model.AlarmEvent;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.receiver.AlarmReceiver;
-import cn.socialclock.ui.NotificationTouchActivity;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.DatetimeFormatter;
 import cn.socialclock.utils.SocialClockLogger;
 
 import android.app.AlarmManager;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +34,7 @@ public class AlarmEventManager {
 
     private AlarmManager alarmManager;
     private AlarmEventDbAdapter dbAdapter;
-
-    private NotificationManager notificationManager;
+    private AlarmNotificationManager alarmNotificationManager;
 
     /**
      * Constructor
@@ -55,6 +50,7 @@ public class AlarmEventManager {
 
         AlarmEventDatabaseHelper dbHelper = new AlarmEventDatabaseHelper(context, null, 1);
         this.dbAdapter = new AlarmEventDbAdapter(dbHelper.getReadableDatabase());
+        this.alarmNotificationManager = new AlarmNotificationManager(context);
     }
 
     /**
@@ -110,10 +106,10 @@ public class AlarmEventManager {
                 snoozeTimeStamp);
 
         // cancel snooze notification if has one
-        cancelNotification();
+        alarmNotificationManager.cancelNotification();
 
         // create next notification
-        createNotification(currentAlarmEvent, snoozeTime);
+        alarmNotificationManager.createNotification(currentAlarmEvent.getEventId(), snoozeTime);
 
         // write log
         SocialClockLogger.log("AlarmEventManager: snooze to "
@@ -161,7 +157,7 @@ public class AlarmEventManager {
                 alarmTimeStamp);
 
         // cancel snooze notification if has one
-        cancelNotification();
+        alarmNotificationManager.cancelNotification();
 
         // write log
         SocialClockLogger.log("AlarmEventManager: createNormalAlarm: "
@@ -196,7 +192,7 @@ public class AlarmEventManager {
                 alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.cancel(pendingIntent);
         // cancel notification
-        cancelNotification();
+        alarmNotificationManager.cancelNotification();
     }
 
     /**
@@ -218,44 +214,6 @@ public class AlarmEventManager {
         return dbAdapter.findByEventId(alarmEventId);
     }
 
-    /**
-     * Cancel a notification
-     */
-    public void cancelNotification() {
-        notificationManager = (NotificationManager) context.getSystemService(
-                        Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(ConstantData.AlarmType.ALARM_SNOOZE);
-    }
-
-    /** Create a notification
-     * todo
-     * @param currentAlarmEvent AlarmEvent
-     * @param snoozeTime Calendar
-     * */
-    public void createNotification(AlarmEvent currentAlarmEvent, Calendar snoozeTime) {
-
-        Notification notification = new Notification(
-                R.drawable.alarm_notification_icon, "SocialAlarm", System
-                .currentTimeMillis());
-
-        Intent notificationIntent = new Intent(context,
-                NotificationTouchActivity.class);
-        // bundle the alarmEventId
-        notificationIntent.putExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID,
-                currentAlarmEvent.getEventId());
-
-    String notificationText = "Snooze to "
-            + String.format("%02d", snoozeTime.get(Calendar.HOUR_OF_DAY)) + ":"
-            + String.format("%02d", snoozeTime.get(Calendar.MINUTE))
-            + ", Touch to cancel";
-    PendingIntent contentIntent = PendingIntent.getActivity(
-            context, ConstantData.AlarmType.ALARM_SNOOZE,
-            notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    notification.setLatestEventInfo(context, "SocialAlarm", notificationText, contentIntent);
-    // send notification
-    notificationManager.notify(ConstantData.AlarmType.ALARM_SNOOZE, notification);
-}
-
     /** Get up Action
      * todo
      * @param currentAlarmEvent AlarmEvent
@@ -263,7 +221,7 @@ public class AlarmEventManager {
     public void getUp(AlarmEvent currentAlarmEvent) {
         SocialClockLogger.log("GetUpAction");
 
-        cancelNotification();
+        alarmNotificationManager.cancelNotification();
 
 		/* update alarm event to db */
         Calendar getUpTime = Calendar.getInstance();
