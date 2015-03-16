@@ -25,7 +25,7 @@ import android.widget.Toast;
  *  2. update snooze clock
  *  3. cancel clock
  */
-public class AlarmEventManager {
+public class SocialClockManager {
 
     private ClockSettings clockSettings;
     private Context context;
@@ -40,7 +40,7 @@ public class AlarmEventManager {
      * Constructor
      * @param context Context
      */
-    public AlarmEventManager(Context context) {
+    public SocialClockManager(Context context) {
 
         this.context = context;
         this.clockSettings = new ClockSettings(context);

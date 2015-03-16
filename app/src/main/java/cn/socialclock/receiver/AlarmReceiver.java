@@ -2,7 +2,7 @@ package cn.socialclock.receiver;
 
 import java.util.Calendar;
 
-import cn.socialclock.manager.AlarmEventManager;
+import cn.socialclock.manager.SocialClockManager;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.ui.AlarmPopActivity;
 import cn.socialclock.utils.ConstantData;
@@ -52,11 +52,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         } else {
             /* else start next alarm */
             SocialClockLogger.log("AlarmReceiver: silence day, " + now.toString());
-            AlarmEventManager alarmEventManager = new AlarmEventManager(context);
+            SocialClockManager socialClockManager = new SocialClockManager(context);
             // cancel current Alarm Event
-            alarmEventManager.cancelAlarm();
+            socialClockManager.cancelAlarm();
             // create next Alarm
-            alarmEventManager.createNormalAlarm();
+            socialClockManager.createNormalAlarm();
         }
     }
 }

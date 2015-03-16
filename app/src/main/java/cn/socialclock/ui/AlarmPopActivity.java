@@ -7,7 +7,7 @@ import java.util.TimerTask;
 
 import cn.socialclock.R;
 import cn.socialclock.model.AlarmEvent;
-import cn.socialclock.manager.AlarmEventManager;
+import cn.socialclock.manager.SocialClockManager;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.SocialClockLogger;
@@ -46,7 +46,7 @@ public class AlarmPopActivity extends Activity {
 
     private ClockSettings clockSettings;
 
-    private AlarmEventManager alarmEventManager;
+    private SocialClockManager socialClockManager;
 
     private Calendar nowCalendar;
 
@@ -64,7 +64,7 @@ public class AlarmPopActivity extends Activity {
         clockSettings = new ClockSettings(this);
 
         // alarm creator init
-        alarmEventManager = new AlarmEventManager(this);
+        socialClockManager = new SocialClockManager(this);
 
         // get current time
         nowCalendar = Calendar.getInstance();
@@ -76,7 +76,7 @@ public class AlarmPopActivity extends Activity {
         String currentAlarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
         SocialClockLogger.log("AlarmPop: alarmType = " + alarmType + ", currentAlarmEventId = " + currentAlarmEventId);
         Calendar startAt = Calendar.getInstance();
-        currentAlarmEvent = alarmEventManager.startAlarmEvent(currentAlarmEventId, startAt);
+        currentAlarmEvent = socialClockManager.startAlarmEvent(currentAlarmEventId, startAt);
 
         // build ui
         buildInterface();
@@ -106,7 +106,7 @@ public class AlarmPopActivity extends Activity {
         btnSnooze.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alarmEventManager.updateSnoozeAlarm(currentAlarmEvent);
+                socialClockManager.updateSnoozeAlarm(currentAlarmEvent);
                 int snoozeDuration = clockSettings.getSnoozeDuration();
                 Toast.makeText(AlarmPopActivity.this,
                         "Snooze " + snoozeDuration + " minutes",
@@ -127,7 +127,7 @@ public class AlarmPopActivity extends Activity {
                 ringtoneMediaPlayer.stop();
 
                 /* get up action */
-                alarmEventManager.getUp(currentAlarmEvent);
+                socialClockManager.getUp(currentAlarmEvent);
 
                 AlarmPopActivity.this.finish();
             }

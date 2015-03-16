@@ -1,7 +1,7 @@
 package cn.socialclock.ui;
 
 import cn.socialclock.R;
-import cn.socialclock.manager.AlarmEventManager;
+import cn.socialclock.manager.SocialClockManager;
 import cn.socialclock.model.ClockSettings;
 import cn.socialclock.utils.SocialClockLogger;
 
@@ -38,7 +38,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private int ex_hour = 0;
     private int ex_minute = 0;
 
-    private AlarmEventManager alarmEventManager;
+    private SocialClockManager socialClockManager;
 
     private String currentEventAlarmId;
 
@@ -52,7 +52,7 @@ public class MainActivity extends Activity implements OnClickListener {
         clockSettings = new ClockSettings(this);
 
         // alarm creator init
-        alarmEventManager = new AlarmEventManager(this);
+        socialClockManager = new SocialClockManager(this);
 
         // build ui
         buildInterface();
@@ -260,9 +260,9 @@ public class MainActivity extends Activity implements OnClickListener {
                 Toast.makeText(this, message,
                         Toast.LENGTH_SHORT).show();
                 // cancel current Alarm Event
-                alarmEventManager.cancelAlarm(currentEventAlarmId);
+                socialClockManager.cancelAlarm(currentEventAlarmId);
                 // start a new alarm
-                currentEventAlarmId = alarmEventManager.createNormalAlarm();
+                currentEventAlarmId = socialClockManager.createNormalAlarm();
 
             }
 
@@ -281,14 +281,14 @@ public class MainActivity extends Activity implements OnClickListener {
 
     /** set clock off */
     private void onClickClockOff() {
-        alarmEventManager.cancelAlarm(currentEventAlarmId);
+        socialClockManager.cancelAlarm(currentEventAlarmId);
         Toast.makeText(this, "Alarm is set OFF", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: clock cancel");
     }
 
     /** set clock on */
     private void onClickClockOn() {
-        currentEventAlarmId = alarmEventManager.createNormalAlarm();
+        currentEventAlarmId = socialClockManager.createNormalAlarm();
         Toast.makeText(this, "Alarm is set ON", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: set clock on");
     }
