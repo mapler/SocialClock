@@ -138,16 +138,12 @@ public class SocialClockManager {
      * Cancel an alarm with alarm event id
      * 1. cancel alarm
      * 2. cancel notification
-     * 3. delete alarm event
-     * @param alarmEventId String
      */
-    public void cancelAlarm(String alarmEventId) {
+    public void cancelAlarm() {
         // cancel alarm
         alarmServiceManager.cancelAlarm();
         // cancel notification
         notificationServiceManager.cancelNotification();
-        // delete current alarmEvent
-        alarmEventManager.deleteAlarmEvent(alarmEventId);
     }
 
     /** Get up

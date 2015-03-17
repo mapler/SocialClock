@@ -54,7 +54,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             SocialClockLogger.log("AlarmReceiver: silence day, " + now.toString());
             SocialClockManager socialClockManager = new SocialClockManager(context);
             // cancel current Alarm Event
-            socialClockManager.cancelAlarm(alarmEventId);
+            socialClockManager.cancelAlarm();
             // create next Alarm
             socialClockManager.createAlarm();
         }

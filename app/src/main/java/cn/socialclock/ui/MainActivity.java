@@ -260,7 +260,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 Toast.makeText(this, message,
                         Toast.LENGTH_SHORT).show();
                 // cancel current Alarm Event
-                socialClockManager.cancelAlarm(currentEventAlarmId);
+                socialClockManager.cancelAlarm();
                 // start a new alarm
                 currentEventAlarmId = socialClockManager.createAlarm();
             }
@@ -280,7 +280,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     /** set clock off */
     private void onClickClockOff() {
-        socialClockManager.cancelAlarm(currentEventAlarmId);
+        socialClockManager.cancelAlarm();
         Toast.makeText(this, "Alarm is set OFF", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: clock cancel");
     }
