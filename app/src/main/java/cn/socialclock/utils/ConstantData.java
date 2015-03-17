@@ -8,7 +8,7 @@ public class ConstantData {
 
     public static class AlarmType {
         public static final int ALARM_NORMAL = 1; // alarm type: normal alarm
-        public static final int ALARM_SNOOZE = 2; // alarm type：snooze alarm
+        public static final int ALARM_SNOOZE = 2; // alarm type: snooze alarm
     }
 
     public static class BundleArgsName {

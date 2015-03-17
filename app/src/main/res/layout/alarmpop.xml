@@ -9,7 +9,6 @@
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/MainLinearLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_margin="2dip"
@@ -21,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="起床时间"
+            android:text="Alarm"
             android:textColor="@color/textwhite"
             android:textSize="30dip"
             android:textStyle="bold" />
@@ -33,7 +32,8 @@
             android:layout_marginBottom="2dip"
             android:background="@color/themered"
             android:orientation="horizontal" >
-            <TextView
+
+            <TextView
                 android:id="@+id/txClock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 android:background="@color/themered"
                 android:paddingBottom="5dip"
                 android:paddingTop="5dip"
-                android:text="贪睡"
+                android:text="Snooze"
                 android:textColor="@color/textwhite"
                 android:textSize="25sp" >
             </Button>
@@ -75,7 +75,7 @@
                 android:background="@color/themered"
                 android:paddingBottom="5dip"
                 android:paddingTop="5dip"
-                android:text="起床"
+                android:text="GetUp"
                 android:textColor="@color/textwhite"
                 android:textSize="25sp" >
             </Button>

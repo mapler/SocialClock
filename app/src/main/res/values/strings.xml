@@ -1,11 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SocialClock</string>
-	<color name="textwhite">#FFFFFF</color>
-	<color name="textblue">#55559F</color>
-	<color name="textblack">#000</color>
-	<color name="themeblue">#28729F</color>
-	<color name="themered">#A11D20</color>
-	<color name="textdgray">#383939</color>
-	<color name="themedark">#373838</color>	
 </resources>

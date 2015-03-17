@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="10dip"
-            android:text="闹钟时间"
+            android:text="ALARM TIME"
             android:textColor="@color/textwhite"
             android:textSize="50dip"
             android:textStyle="bold" >
@@ -167,77 +167,83 @@
                 </Button>
             </LinearLayout>
 
-            <TableLayout
+            <LinearLayout
                 android:id="@+id/table_week"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/layoutclock"
                 android:background="@color/themeblue" >
 
-                <TableRow
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/themeblue"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal" >
-
                     <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:id="@+id/btn_sun"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="日"
+                        android:text="SUN"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
 
                     <Button
                         android:id="@+id/btn_mon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="一"
+                        android:text="MON"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
 
                     <Button
                         android:id="@+id/btn_tue"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="二"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TUE"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
 
                     <Button
                         android:id="@+id/btn_wed"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="三"
+                        android:text="WED"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
 
                     <Button
                         android:id="@+id/btn_thu"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="四"
+                        android:text="THU"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
 
                     <Button
                         android:id="@+id/btn_fri"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="五"
+                        android:text="FRI"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
 
                     <Button
                         android:id="@+id/btn_sat"
                         android:background="@color/themeblue"
-                        android:padding="10dip"
-                        android:text="六"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SAT"
+                        android:layout_weight="1"
                         android:textColor="@color/textwhite"
                         android:textSize="15dip" />
-                </TableRow>
-            </TableLayout>
+            </LinearLayout>
         </RelativeLayout>
 
         <LinearLayout
@@ -255,7 +261,7 @@
                 android:background="@color/themeblue"
                 android:paddingBottom="5dip"
                 android:paddingTop="5dip"
-                android:text="开启"
+                android:text="ON"
                 android:textColor="@color/textwhite"
                 android:textSize="30sp" >
             </Button>
@@ -270,7 +276,7 @@
                 android:background="@color/themeblue"
                 android:paddingBottom="5dip"
                 android:paddingTop="5dip"
-                android:text="关闭"
+                android:text="OFF"
                 android:textColor="@color/textwhite"
                 android:textSize="30sp" >
             </Button>
@@ -293,7 +299,7 @@
             android:layout_weight="1"
             android:background="@drawable/gradient_darkblue"
             android:gravity="center"
-            android:text="闹钟"
+            android:text="ALARM"
             android:textColor="@color/textwhite"
             android:textSize="25sp" />
 
@@ -305,7 +311,7 @@
             android:layout_weight="1"
             android:background="@color/themedark"
             android:gravity="center"
-            android:text="统计"
+            android:text="HISTORY"
             android:textColor="@color/textwhite"
             android:textSize="25sp" />
 
@@ -317,7 +323,7 @@
             android:layout_weight="1"
             android:background="@color/themedark"
             android:gravity="center"
-            android:text="设定"
+            android:text="SETTING"
             android:textColor="@color/textwhite"
             android:textSize="25sp" />
     </LinearLayout>
