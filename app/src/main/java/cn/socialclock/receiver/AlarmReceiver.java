@@ -1,5 +1,9 @@
 package cn.socialclock.receiver;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+
 import java.util.Calendar;
 
 import cn.socialclock.manager.SocialClockManager;
@@ -8,10 +12,6 @@ import cn.socialclock.ui.AlarmPopActivity;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.DatetimeFormatter;
 import cn.socialclock.utils.SocialClockLogger;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 
 /**
  * @author mapler

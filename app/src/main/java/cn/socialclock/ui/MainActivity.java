@@ -1,32 +1,31 @@
 package cn.socialclock.ui;
 
-import cn.socialclock.R;
-import cn.socialclock.manager.SocialClockManager;
-import cn.socialclock.model.ClockSettings;
-import cn.socialclock.utils.SocialClockLogger;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Calendar;
-
+import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-import com.twitter.sdk.android.Twitter;
 
+import java.util.Calendar;
+
+import cn.socialclock.R;
+import cn.socialclock.manager.SocialClockManager;
+import cn.socialclock.model.ClockSettings;
+import cn.socialclock.utils.SocialClockLogger;
 import io.fabric.sdk.android.Fabric;
 
 /**

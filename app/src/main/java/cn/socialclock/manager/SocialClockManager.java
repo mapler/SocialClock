@@ -1,5 +1,7 @@
 package cn.socialclock.manager;
 
+import android.content.Context;
+
 import java.util.Calendar;
 
 import cn.socialclock.model.AlarmEvent;
@@ -7,8 +9,6 @@ import cn.socialclock.model.ClockSettings;
 import cn.socialclock.utils.ConstantData;
 import cn.socialclock.utils.DatetimeFormatter;
 import cn.socialclock.utils.SocialClockLogger;
-
-import android.content.Context;
 
 /**
  * @author mapler

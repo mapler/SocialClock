@@ -1,16 +1,6 @@
 package cn.socialclock.ui;
 
 
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import cn.socialclock.R;
-import cn.socialclock.manager.SocialClockManager;
-import cn.socialclock.model.ClockSettings;
-import cn.socialclock.utils.ConstantData;
-import cn.socialclock.utils.SocialClockLogger;
-
 import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -22,6 +12,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import cn.socialclock.R;
+import cn.socialclock.manager.SocialClockManager;
+import cn.socialclock.model.ClockSettings;
+import cn.socialclock.utils.ConstantData;
+import cn.socialclock.utils.SocialClockLogger;
 
 /**
  * @author mapler
