@@ -55,8 +55,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
     private SocialClockManager socialClockManager;
 
-    private String currentEventAlarmId;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         SocialClockLogger.log("MainActivity: onCreate start");
@@ -313,7 +311,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 // cancel current Alarm Event
                 socialClockManager.cancelAlarm();
                 // start a new alarm
-                currentEventAlarmId = socialClockManager.createAlarm();
+                socialClockManager.createAlarm();
             }
 
             // hide time settings
@@ -344,7 +342,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     /** set clock on */
     private void onClickClockOn() {
-        currentEventAlarmId = socialClockManager.createAlarm();
+        socialClockManager.createAlarm();
         Toast.makeText(this, "Alarm is set ON", Toast.LENGTH_SHORT).show();
         SocialClockLogger.log("MainActivity: set clock on");
     }
