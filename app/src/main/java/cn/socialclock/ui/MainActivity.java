@@ -19,14 +19,30 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+import com.twitter.sdk.android.Twitter;
+
+import io.fabric.sdk.android.Fabric;
+
 /**
  * @author mapler
  * Main UI
  */
 public class MainActivity extends Activity implements OnClickListener {
 
+    // twitter key and secret
+    private static final String TWITTER_KEY = "yourtwitterkey";
+    private static final String TWITTER_SECRET = "yourtwittersecret";
+
     private TextView textHour;
     private TextView textMinute;
+
+    private TwitterLoginButton twitterLoginButton;
 
     private ClockSettings clockSettings;
 
@@ -48,6 +64,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
         super.onCreate(savedInstanceState);
 
+        // init twitter config
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
+
         // get setting preference
         clockSettings = new ClockSettings(this);
 
@@ -67,6 +87,9 @@ public class MainActivity extends Activity implements OnClickListener {
         // set view layout
         setContentView(R.layout.main);
 
+        // build login interface
+        buildLoginInterface();
+
         // build clock dial interface
         buildClockDialInterface();
 
@@ -78,6 +101,31 @@ public class MainActivity extends Activity implements OnClickListener {
 
         // build tab menu init
         buildTabMenuButton();
+    }
+
+    /**
+     * Wrap a twitter Login Button
+     * todo show username replace login button if twitter session exist
+     */
+    private void buildLoginInterface() {
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // Do something with result, which provides a TwitterSession for making API calls
+                // todo set username, id to settings
+                SocialClockLogger.log("MainActivity, login success. result = " + result.toString());
+                Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                SocialClockLogger.log("MainActivity, login failure. " + exception.toString());
+                Toast.makeText(MainActivity.this, "Login Failure", Toast.LENGTH_SHORT).show();
+            }
+        });
+        Button loginButton = (Button) findViewById(R.id.btn_login);
+        loginButton.setOnClickListener(this);
     }
 
     private void buildClockDialInterface() {
@@ -197,6 +245,10 @@ public class MainActivity extends Activity implements OnClickListener {
                 startActivity(switchTabSettings);
                 break;
             }
+            case R.id.btn_login: {
+                /* delegate twitter login button */
+                twitterLoginButton.performClick();
+            }
             default: {
                 break;
             }
@@ -276,6 +328,12 @@ public class MainActivity extends Activity implements OnClickListener {
             // return from setting mode
             isClockSettingModeOn = false;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 
     /** set clock off */

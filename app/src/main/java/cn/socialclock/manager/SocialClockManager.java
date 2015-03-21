@@ -20,6 +20,7 @@ public class SocialClockManager {
     private NotificationServiceManager notificationServiceManager;
     private AlarmServiceManager alarmServiceManager;
     private AlarmEventManager alarmEventManager;
+    private SnsManager snsManager;
 
     /**
      * Constructor
@@ -32,6 +33,7 @@ public class SocialClockManager {
         this.alarmEventManager = new AlarmEventManager(context);
         this.notificationServiceManager = new NotificationServiceManager(context);
         this.alarmServiceManager = new AlarmServiceManager(context);
+        this.snsManager = new SnsManager(context);
     }
 
     /**
@@ -165,13 +167,11 @@ public class SocialClockManager {
     }
 
     /** Sns
-     * todo
      * @param alarmEventId String
      */
     public void sendSns(String alarmEventId) {
-        String snsMessage = SnsManager.buildSnsMessage(alarmEventManager.getAlarmEventById(alarmEventId));
-        // todo send
-
+        String snsMessage = snsManager.buildSnsMessage(alarmEventManager.getAlarmEventById(alarmEventId));
+        snsManager.tweet(snsMessage);
         // write log
         SocialClockLogger.log(snsMessage);
     }

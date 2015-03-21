@@ -8,17 +8,18 @@
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="fill_parent"
-        android:layout_height="35dip"
+        android:layout_height="wrap_content"
+        android:paddingBottom="1dip"
         android:orientation="vertical" >
 
         <TextView
             style="@style/FontShadow"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5px"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:background="@color/themedark"
             android:gravity="right"
-
             android:text="SOCIALCLOCK"
             android:textColor="@color/textwhite"
             android:textStyle="bold"
@@ -26,9 +27,50 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/login"
+        android:layout_width="fill_parent"
+        android:layout_height="35dip"
+        android:background="@color/themedark"
+        android:layout_below="@id/header"
+        android:paddingBottom="1dip"
+        android:gravity="right">
+        <Button
+            android:id="@+id/btn_login"
+            style="@style/FontShadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOGIN"
+            android:background="@color/themeblue"
+            android:textColor="@color/textwhite"
+            android:textSize="15dip"
+            android:textStyle="bold">
+        </Button>
+
+        <TextView
+            android:id="@+id/username"
+            style="@style/FontShadow"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="\@USERNAME"
+            android:background="@color/themeblue"
+            android:textColor="@color/textwhite"
+            android:textSize="15dip"
+            android:visibility="gone"
+            android:textStyle="bold">
+        </TextView>
+        <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/twitter_login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/header"
+        android:layout_below="@id/login"
         android:background="@drawable/gradient_dark"
         android:orientation="vertical" >
 

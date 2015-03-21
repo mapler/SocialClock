@@ -46,6 +46,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="yourcrashlyticsapikey" />
     </application>
 
     <uses-sdk android:minSdkVersion="8" />
