@@ -101,28 +101,15 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     /**
-     * Wrap a twitter Login Button
-     * todo show username replace login button if twitter session exist
+     * User login logout.
      */
     private void buildLoginInterface() {
-        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                // Do something with result, which provides a TwitterSession for making API calls
-                // todo set username, id to settings
-                SocialClockLogger.log("MainActivity, login success. result = " + result.toString());
-                Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                SocialClockLogger.log("MainActivity, login failure. " + exception.toString());
-                Toast.makeText(MainActivity.this, "Login Failure", Toast.LENGTH_SHORT).show();
-            }
-        });
-        Button loginButton = (Button) findViewById(R.id.btn_login);
-        loginButton.setOnClickListener(this);
+        TwitterSession twitterSession = Twitter.getSessionManager().getActiveSession();
+        if (twitterSession != null) {
+            updateInterfaceOnLogin();
+        } else {
+            updateInterfaceOnLogout();
+        }
     }
 
     private void buildClockDialInterface() {
@@ -245,11 +232,84 @@ public class MainActivity extends Activity implements OnClickListener {
             case R.id.btn_login: {
                 /* delegate twitter login button */
                 twitterLoginButton.performClick();
+                break;
+            }
+            case R.id.btn_logout: {
+                /* logout */
+                onLogout();
+                break;
             }
             default: {
                 break;
             }
         }
+    }
+
+    private void onLogout() {
+        Twitter.getInstance();
+        Twitter.logOut();
+        updateInterfaceOnLogout();
+        SocialClockLogger.log("MainActivity, logout.");
+    }
+
+    /**
+     * logout ui
+     */
+    private void updateInterfaceOnLogout() {
+        clockSettings.setUserId("0");
+        clockSettings.setUserName("");
+
+        TextView textUserName = (TextView) findViewById(R.id.textusername);
+        textUserName.setText("");
+        textUserName.setVisibility(View.GONE);
+
+        Button logoutButton = (Button) findViewById(R.id.btn_logout);
+        logoutButton.setVisibility(View.GONE);
+
+        Button loginButton = (Button) findViewById(R.id.btn_login);
+        loginButton.setVisibility(View.VISIBLE);
+        loginButton.setOnClickListener(this);
+
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                onLogin(result);
+                SocialClockLogger.log("MainActivity, login success. result = " + result.toString());
+                Toast.makeText(MainActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                SocialClockLogger.log("MainActivity, login failure. " + exception.toString());
+                Toast.makeText(MainActivity.this, "Login Failure", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * twitter login
+     */
+    private void onLogin(Result<TwitterSession> result) {
+        TwitterSession twitterSession = result.data;
+        clockSettings.setUserId(Long.toString(twitterSession.getUserId()));
+        clockSettings.setUserName(twitterSession.getUserName());
+        updateInterfaceOnLogin();
+    }
+    /**
+     * login ui
+     */
+    private void updateInterfaceOnLogin() {
+        TextView textUserName = (TextView) findViewById(R.id.textusername);
+        textUserName.setText("@" + clockSettings.getUserName().toUpperCase());
+        textUserName.setVisibility(View.VISIBLE);
+
+        Button logoutButton = (Button) findViewById(R.id.btn_logout);
+        logoutButton.setVisibility(View.VISIBLE);
+        logoutButton.setOnClickListener(this);
+
+        Button loginButton = (Button) findViewById(R.id.btn_login);
+        loginButton.setVisibility(View.GONE);
     }
 
     /** weekday settings with binary compare */

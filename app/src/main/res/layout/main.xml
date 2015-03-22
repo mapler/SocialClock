@@ -9,7 +9,7 @@
         android:id="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="1dip"
+        android:paddingBottom="2dip"
         android:orientation="vertical" >
 
         <TextView
@@ -32,7 +32,7 @@
         android:layout_height="35dip"
         android:background="@color/themedark"
         android:layout_below="@id/header"
-        android:paddingBottom="1dip"
+        android:paddingBottom="2dip"
         android:gravity="right">
         <Button
             android:id="@+id/btn_login"
@@ -46,12 +46,28 @@
             android:textStyle="bold">
         </Button>
 
+        <Button
+            android:id="@+id/btn_logout"
+            style="@style/FontShadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LOGOUT"
+            android:background="@color/themeblue"
+            android:textColor="@color/textwhite"
+            android:paddingRight="2dip"
+            android:visibility="gone"
+            android:textSize="15dip"
+            android:textStyle="bold">
+        </Button>
+
         <TextView
-            android:id="@+id/username"
+            android:id="@+id/textusername"
             style="@style/FontShadow"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:gravity="center"
+            android:paddingRight="5dip"
+            android:paddingLeft="5dip"
             android:text="\@USERNAME"
             android:background="@color/themeblue"
             android:textColor="@color/textwhite"

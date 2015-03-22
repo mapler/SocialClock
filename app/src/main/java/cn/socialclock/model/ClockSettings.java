@@ -27,6 +27,7 @@ public class ClockSettings {
     public final String KEY_IS_ENABLE = "is_enable";
     public final String KEY_SNOOZE_DURATION = "snooze_duration";
     public final String KEY_USER_ID = "user_id";
+    private final String KEY_USER_NAME = "user_name";
 
     public ClockSettings(Context context) {
         /** Init a ClockSettings with a context */
@@ -118,14 +119,23 @@ public class ClockSettings {
 
     public String getUserId() {
         /** Get user Id */
-        // todo register module or get from sns id
-        String userId = clockSettingsPreferences.getString(KEY_USER_ID, "1");
-        return userId;
+        return clockSettingsPreferences.getString(KEY_USER_ID, "0");
     }
 
     public ClockSettings setUserId(String userId) {
-        // todo register module or get from sns id
         clockSettingsEditor.putString(KEY_USER_ID, userId);
+        clockSettingsEditor.commit();
+        return this;
+    }
+
+    /** Get user name */
+    public String getUserName() {
+        return clockSettingsPreferences.getString(KEY_USER_NAME, "");
+    }
+
+    /** Set user name */
+    public ClockSettings setUserName(String userName) {
+        clockSettingsEditor.putString(KEY_USER_NAME, userName);
         clockSettingsEditor.commit();
         return this;
     }
