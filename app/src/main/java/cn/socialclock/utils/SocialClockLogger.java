@@ -12,4 +12,9 @@ public class SocialClockLogger {
         /** wrapper the system log with LOG_TAG */
         Log.d(ConstantData.Logger.LOG_TAG, message);
     }
+
+    public static void error(String message) {
+        /** wrapper the system error log with LOG_TAG */
+        Log.e(ConstantData.Logger.LOG_TAG, message);
+    }
 }
