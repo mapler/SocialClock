@@ -3,6 +3,7 @@ package cn.socialclock.manager;
 import android.content.Context;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 import cn.socialclock.db.AlarmEventDatabaseHelper;
@@ -40,7 +41,15 @@ public class AlarmEventManager {
      * @return AlarmEvent obj
      */
     protected AlarmEvent getAlarmEventById(String alarmEventId) {
-        return dbAdapter.findByEventId(alarmEventId);
+        return dbAdapter.getByEventId(alarmEventId);
+    }
+
+    /**
+     * Get all alarm event from db
+     * @return AlarmEvent list
+     */
+    protected List<AlarmEvent> getAllAlarmEvents() {
+        return dbAdapter.findAll();
     }
 
     /**

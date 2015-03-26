@@ -65,19 +65,21 @@ public class AlarmEventDbAdapter {
     }
 
     /**
-     * get all data
-     * @return alarmEventList list of AlarmEvent
+     * get data filter by selection order by orderBy
+     * @param selection String or null, ex. "event_id = '1234' AND ' end_at NOT 'null'"
+     * @param orderBy String or null, ex. "start_at DESC"
+     * @return list of AlarmEvent
      */
-    public List<AlarmEvent> findAll() {
+    public List<AlarmEvent> filterBy(String selection, String orderBy) {
         List<AlarmEvent> alarmEventList = new ArrayList<>();
         Cursor cursor = db.query(
                 TABLE_NAME,
                 COLUMNS,
+                selection,
                 null,
                 null,
                 null,
-                null,
-                COLUMN_START_AT);
+                orderBy);
 
         while(cursor.moveToNext()) {
             AlarmEvent alarmEvent = createAlarmEvent(cursor);
@@ -88,12 +90,21 @@ public class AlarmEventDbAdapter {
         return alarmEventList;
     }
 
+
     /**
-     * select by event id
+     * get all data order by start_at
+     * @return alarmEventList list of AlarmEvent
+     */
+    public List<AlarmEvent> findAll() {
+        return filterBy(null, COLUMN_START_AT + " DESC");
+    }
+
+    /**
+     * get one by event id
      * @param eventId String AlarmEvent eventId
      * @return AlarmEvent or null (if does not exist)
      */
-    public AlarmEvent findByEventId(String eventId) {
+    public AlarmEvent getByEventId(String eventId) {
         String selection = COLUMN_EVENT_ID + "='" + eventId + "'";
         Cursor cursor = db.query(
                 TABLE_NAME,
