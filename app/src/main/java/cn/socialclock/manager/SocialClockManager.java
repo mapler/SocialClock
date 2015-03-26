@@ -181,14 +181,18 @@ public class SocialClockManager {
     }
 
     /**
-     * Get all finished AlarmEvent for SimpleAdapter
+     * Get finished AlarmEvent for SimpleAdapter
      * @return parsedAlarmEvents List<Map<String, Object>>
      */
-    public List<Map<String, Object>> getParsedAllFinishedAlarmEvents() {
+    public List<Map<String, Object>> getParsedFinishedAlarmEvents() {
         List<AlarmEvent> allAlarmEvents = alarmEventManager.getAllAlarmEvents();
         List<Map<String, Object>> parsedAlarmEvents = new ArrayList<>();
 
         for (AlarmEvent alarmEvent : allAlarmEvents) {
+            // filter event is finished
+            if (alarmEvent.getEndAt() == null){
+                continue;
+            }
             Map<String, Object> map = new HashMap<>();
             map.put(ConstantData.AdapterKey.ALARM_EVENT_USER_ID_KEY, alarmEvent.getUserId());
             map.put(ConstantData.AdapterKey.ALARM_EVENT_START_AT_KEY,
