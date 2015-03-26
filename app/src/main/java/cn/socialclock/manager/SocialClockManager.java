@@ -2,7 +2,11 @@ package cn.socialclock.manager;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import cn.socialclock.model.AlarmEvent;
 import cn.socialclock.model.ClockSettings;
@@ -174,5 +178,27 @@ public class SocialClockManager {
         snsManager.tweet(snsMessage);
         // write log
         SocialClockLogger.log(snsMessage);
+    }
+
+    /**
+     * Get all finished AlarmEvent for SimpleAdapter
+     * @return parsedAlarmEvents List<Map<String, Object>>
+     */
+    public List<Map<String, Object>> getParsedAllFinishedAlarmEvents() {
+        List<AlarmEvent> allAlarmEvents = alarmEventManager.getAllAlarmEvents();
+        List<Map<String, Object>> parsedAlarmEvents = new ArrayList<>();
+
+        for (AlarmEvent alarmEvent : allAlarmEvents) {
+            Map<String, Object> map = new HashMap<>();
+            map.put(ConstantData.AdapterKey.ALARM_EVENT_USER_ID_KEY, alarmEvent.getUserId());
+            map.put(ConstantData.AdapterKey.ALARM_EVENT_START_AT_KEY,
+                    DatetimeFormatter.calendarToString(alarmEvent.getStartAt()));
+            map.put(ConstantData.AdapterKey.ALARM_EVENT_END_AT_KEY,
+                    DatetimeFormatter.calendarToString(alarmEvent.getEndAt()));
+            map.put(ConstantData.AdapterKey.ALARM_EVENT_SNOOZE_TIMES_KEY,
+                    alarmEvent.getSnoozeTimes());
+            parsedAlarmEvents.add(map);
+        }
+        return parsedAlarmEvents;
     }
 }

@@ -218,8 +218,8 @@ public class MainActivity extends Activity implements OnClickListener {
                 break;
             }
             case R.id.btn_tabAnalytics: {
-                /* direct to analytics view */
-                Intent switchTabAnalytics = new Intent(this, AnalyticsActivity.class);
+                /* direct to history view */
+                Intent switchTabAnalytics = new Intent(this, HistoryActivity.class);
                 startActivity(switchTabAnalytics);
                 break;
             }

@@ -26,6 +26,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/header"
@@ -38,11 +39,65 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dip"
             android:gravity="center"
-            android:text="ANALYTICS"
+            android:text="HISTORY"
             android:textColor="@color/textwhite"
             android:textSize="50dip"
             android:textStyle="bold" >
         </TextView>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:padding="2dip"
+                android:background="@color/themeblue"
+                android:textColor="@color/textwhite"
+                android:layout_width="fill_parent"
+                android:paddingBottom="2dip">
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textwhite"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:text="Name" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/textwhite"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:text="Alarm At" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textwhite"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:text="GetUp At" />
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textwhite"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:text="Snooze" />
+            </LinearLayout>
+
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:paddingTop="2dip"
+                android:id="@+id/alarm_event_list" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

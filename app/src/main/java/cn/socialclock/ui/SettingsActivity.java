@@ -31,7 +31,7 @@ public class SettingsActivity extends Activity {
         btn_tabAnalytics.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent switchTabMain = new Intent(SettingsActivity.this,
-                        AnalyticsActivity.class);
+                        HistoryActivity.class);
                 SettingsActivity.this.startActivity(switchTabMain);
             }
         });

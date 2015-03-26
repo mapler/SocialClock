@@ -19,7 +19,7 @@
         <activity
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:name=".ui.AnalyticsActivity" >
+            android:name=".ui.HistoryActivity" >
         </activity>
         <receiver
             android:name=".receiver.AlarmReceiver"
