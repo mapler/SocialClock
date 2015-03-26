@@ -54,7 +54,7 @@
             android:text="LOGOUT"
             android:background="@color/themeblue"
             android:textColor="@color/textwhite"
-            android:paddingRight="2dip"
+            android:layout_marginRight="1dip"
             android:visibility="gone"
             android:textSize="15dip"
             android:textStyle="bold">
