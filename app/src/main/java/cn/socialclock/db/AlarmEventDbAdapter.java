@@ -66,7 +66,7 @@ public class AlarmEventDbAdapter {
 
     /**
      * get data filter by selection order by orderBy
-     * @param selection String or null, ex. "event_id = '1234' AND ' end_at NOT 'null'"
+     * @param selection String or null, ex. "event_id = '1234' AND end_at NOT NULL"
      * @param orderBy String or null, ex. "start_at DESC"
      * @return list of AlarmEvent
      */
