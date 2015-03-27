@@ -195,7 +195,7 @@ public class SocialClockManager {
                 continue;
             }
             Map<String, Object> map = new HashMap<>();
-            map.put(ConstantData.AdapterKey.ALARM_EVENT_USER_ID_KEY, alarmEvent.getUserId());
+            map.put(ConstantData.AdapterKey.ALARM_EVENT_USER_NAME_KEY, alarmEvent.getUserName());
             map.put(ConstantData.AdapterKey.ALARM_EVENT_START_AT_KEY,
                     DatetimeFormatter.calendarToString(alarmEvent.getStartAt()));
             map.put(ConstantData.AdapterKey.ALARM_EVENT_END_AT_KEY,

@@ -2,6 +2,8 @@ package cn.socialclock.model;
 
 import java.util.Calendar;
 
+import cn.socialclock.utils.ConstantData;
+
 /**
  * @author mapler
  * Alarm Event
@@ -69,7 +71,15 @@ public class AlarmEvent {
         return userId;
     }
 
+    /**
+     * get user name
+     * if username is null, return "ANONYMOUS"
+     * @return username String
+     */
     public String getUserName() {
+        if (userName == null) {
+            return ConstantData.UserName.ANONYMOUS_USER;
+        }
         return userName;
     }
 

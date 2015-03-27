@@ -55,11 +55,11 @@ public class HistoryActivity extends Activity implements OnClickListener {
 
         SimpleAdapter allAlarmEventAdapter = new SimpleAdapter(this,
                 socialClockManager.getParsedFinishedAlarmEvents(), R.layout.alarmeventitem,
-                new String[] {ConstantData.AdapterKey.ALARM_EVENT_USER_ID_KEY,
+                new String[] {ConstantData.AdapterKey.ALARM_EVENT_USER_NAME_KEY,
                         ConstantData.AdapterKey.ALARM_EVENT_START_AT_KEY,
                         ConstantData.AdapterKey.ALARM_EVENT_END_AT_KEY,
                         ConstantData.AdapterKey.ALARM_EVENT_SNOOZE_TIMES_KEY},
-                new int[] {R.id.userId, R.id.startAt, R.id.endAt, R.id.snoozeTimes});
+                new int[] {R.id.userName, R.id.startAt, R.id.endAt, R.id.snoozeTimes});
 
         listView.setAdapter(allAlarmEventAdapter);
     }

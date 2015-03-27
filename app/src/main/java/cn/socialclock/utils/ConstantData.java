@@ -21,9 +21,13 @@ public class ConstantData {
     }
 
     public static class AdapterKey {
-        public static final String ALARM_EVENT_USER_ID_KEY = "userId";
+        public static final String ALARM_EVENT_USER_NAME_KEY = "userName";
         public static final String ALARM_EVENT_START_AT_KEY = "startAt";
         public static final String ALARM_EVENT_END_AT_KEY = "endAt";
         public static final String ALARM_EVENT_SNOOZE_TIMES_KEY = "snoozeTimes";
+    }
+
+    public static class UserName {
+        public static final String ANONYMOUS_USER = "ANONYMOUS";
     }
 }
