@@ -130,7 +130,7 @@ public class ClockSettings {
 
     /** Get user name */
     public String getUserName() {
-        return clockSettingsPreferences.getString(KEY_USER_NAME, "");
+        return clockSettingsPreferences.getString(KEY_USER_NAME, null);
     }
 
     /** Set user name */

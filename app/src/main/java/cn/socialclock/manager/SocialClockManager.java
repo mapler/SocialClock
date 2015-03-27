@@ -97,8 +97,9 @@ public class SocialClockManager {
         // start an alarm event if not exist
         if (alarmEvent == null){
             String userId = clockSettings.getUserId();
+            String userName = clockSettings.getUserName();
             Calendar startAt = Calendar.getInstance();
-            alarmEventManager.startAlarmEvent(alarmEventId, userId, startAt);
+            alarmEventManager.startAlarmEvent(alarmEventId, userId, userName, startAt);
         }
         // cancel snooze notification if has one
         notificationServiceManager.cancelNotification();

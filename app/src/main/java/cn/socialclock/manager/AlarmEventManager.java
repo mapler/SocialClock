@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import cn.socialclock.db.AlarmEventDatabaseHelper;
 import cn.socialclock.db.AlarmEventDbAdapter;
 import cn.socialclock.model.AlarmEvent;
 
@@ -23,8 +22,7 @@ public class AlarmEventManager {
      * @param context Context
      */
     protected AlarmEventManager(Context context) {
-        AlarmEventDatabaseHelper dbHelper = new AlarmEventDatabaseHelper(context, null, 1);
-        this.dbAdapter = new AlarmEventDbAdapter(dbHelper.getReadableDatabase());
+        this.dbAdapter = new AlarmEventDbAdapter(context);
     }
 
     /**
@@ -66,8 +64,8 @@ public class AlarmEventManager {
      * @param userId String
      * @param startAt Calendar
      */
-    protected void startAlarmEvent(String alarmEventId, String userId, Calendar startAt) {
-        AlarmEvent alarmEvent = new AlarmEvent(alarmEventId, userId, startAt);
+    protected void startAlarmEvent(String alarmEventId, String userId, String userName, Calendar startAt) {
+        AlarmEvent alarmEvent = new AlarmEvent(alarmEventId, userId, userName, startAt);
         dbAdapter.insert(alarmEvent);
     }
 

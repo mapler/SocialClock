@@ -1,6 +1,7 @@
 package cn.socialclock.db;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -17,12 +18,15 @@ import cn.socialclock.utils.SocialClockLogger;
  */
 public class AlarmEventDbAdapter {
 
+    private static final int DB_VERSION = 2;
+
     // table name
     private static final String TABLE_NAME = "alarm_event";
 
     /* table columns */
     private static final String COLUMN_EVENT_ID = "event_id";
     private static final String COLUMN_USER_ID = "user_id";
+    private static final String COLUMN_USER_NAME = "user_name";
     private static final String COLUMN_START_AT = "start_at";
     private static final String COLUMN_END_AT = "end_at";
     private static final String COLUMN_SNOOZE_TIMES = "snooze_times";
@@ -31,6 +35,7 @@ public class AlarmEventDbAdapter {
     private static final String[] COLUMNS = {
             COLUMN_EVENT_ID,
             COLUMN_USER_ID,
+            COLUMN_USER_NAME,
             COLUMN_START_AT,
             COLUMN_END_AT,
             COLUMN_SNOOZE_TIMES,
@@ -43,6 +48,7 @@ public class AlarmEventDbAdapter {
             "CREATE TABLE " + TABLE_NAME + "(" +
             COLUMN_EVENT_ID + " TEXT PRIMARY KEY," +
             COLUMN_USER_ID + " TEXT," +
+            COLUMN_USER_NAME + " TEXT," +
             COLUMN_START_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP," +
             COLUMN_END_AT + " DATETIME DEFAULT NULL," +
             COLUMN_SNOOZE_TIMES + " INTEGER DEFAULT 0," +
@@ -53,15 +59,26 @@ public class AlarmEventDbAdapter {
     // alarm_event table drop sql
     public static final String DROP_TABLE_QUERY = "drop table if exists " + TABLE_NAME;
 
+    AlarmEventDatabaseHelper dbHelper;
+
     // SQLiteDatabase
     private SQLiteDatabase db;
 
     /**
      * Constructor
-     * @param db SQLiteDatabase
+     * @param context Context
      */
-    public AlarmEventDbAdapter(SQLiteDatabase db) {
-        this.db = db;
+    public AlarmEventDbAdapter(Context context) {
+        this.dbHelper = new AlarmEventDatabaseHelper(context, null, DB_VERSION);
+    }
+
+    /**
+     * require db if db is closed
+     */
+    private void requireDb() {
+        if (db == null || !db.isOpen()) {
+            db = dbHelper.getReadableDatabase();
+        }
     }
 
     /**
@@ -71,25 +88,27 @@ public class AlarmEventDbAdapter {
      * @return list of AlarmEvent
      */
     public List<AlarmEvent> filterBy(String selection, String orderBy) {
-        List<AlarmEvent> alarmEventList = new ArrayList<>();
-        Cursor cursor = db.query(
-                TABLE_NAME,
-                COLUMNS,
-                selection,
-                null,
-                null,
-                null,
-                orderBy);
-
-        while(cursor.moveToNext()) {
-            AlarmEvent alarmEvent = createAlarmEvent(cursor);
-            alarmEventList.add(alarmEvent);
+        requireDb();
+        try {
+            List<AlarmEvent> alarmEventList = new ArrayList<>();
+            Cursor cursor = db.query(
+                    TABLE_NAME,
+                    COLUMNS,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    orderBy);
+            while (cursor.moveToNext()) {
+                AlarmEvent alarmEvent = createAlarmEvent(cursor);
+                alarmEventList.add(alarmEvent);
+            }
+            cursor.close();
+            return alarmEventList;
+        } finally {
+            db.close();
         }
-        cursor.close();
-
-        return alarmEventList;
     }
-
 
     /**
      * get all data order by start_at
@@ -105,26 +124,30 @@ public class AlarmEventDbAdapter {
      * @return AlarmEvent or null (if does not exist)
      */
     public AlarmEvent getByEventId(String eventId) {
-        String selection = COLUMN_EVENT_ID + "='" + eventId + "'";
-        Cursor cursor = db.query(
-                TABLE_NAME,
-                COLUMNS,
-                selection,
-                null,
-                null,
-                null,
-                null);
-        AlarmEvent alarmEvent;
-        /* check if exist */
-        if (cursor.getCount() > 0) {
-            cursor.moveToNext();
-            alarmEvent = createAlarmEvent(cursor);
+        requireDb();
+        try {
+            String selection = COLUMN_EVENT_ID + "='" + eventId + "'";
+            Cursor cursor = db.query(
+                    TABLE_NAME,
+                    COLUMNS,
+                    selection,
+                    null,
+                    null,
+                    null,
+                    null);
+            AlarmEvent alarmEvent;
+            /* check if exist */
+            if (cursor.getCount() > 0) {
+                cursor.moveToNext();
+                alarmEvent = createAlarmEvent(cursor);
+            } else {
+                alarmEvent = null;
+            }
+            cursor.close();
+            return alarmEvent;
+        } finally {
+            db.close();
         }
-        else {
-            alarmEvent = null;
-        }
-        cursor.close();
-        return alarmEvent;
     }
 
     /**
@@ -132,16 +155,22 @@ public class AlarmEventDbAdapter {
      * @param alarmEvent AlarmEvent object
      */
     public long insert(AlarmEvent alarmEvent) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_EVENT_ID, alarmEvent.getEventId());
-        values.put(COLUMN_USER_ID, alarmEvent.getUserId());
-        values.put(COLUMN_START_AT, DatetimeFormatter.calendarToString(alarmEvent.getStartAt()));
-        values.put(COLUMN_END_AT, DatetimeFormatter.calendarToString(alarmEvent.getEndAt()));
-        values.put(COLUMN_SNOOZE_TIMES, alarmEvent.getSnoozeTimes());
-        values.put(COLUMN_SYNC_AT, DatetimeFormatter.calendarToString(alarmEvent.getSyncAt()));
-        values.put(COLUMN_DELETED_AT, DatetimeFormatter.calendarToString(alarmEvent.getDeletedAt()));
-        SocialClockLogger.log("Insert DB Record: " + alarmEvent.getEventId());
-        return db.insert(TABLE_NAME, null, values);
+        requireDb();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_EVENT_ID, alarmEvent.getEventId());
+            values.put(COLUMN_USER_ID, alarmEvent.getUserId());
+            values.put(COLUMN_USER_NAME, alarmEvent.getUserName());
+            values.put(COLUMN_START_AT, DatetimeFormatter.calendarToString(alarmEvent.getStartAt()));
+            values.put(COLUMN_END_AT, DatetimeFormatter.calendarToString(alarmEvent.getEndAt()));
+            values.put(COLUMN_SNOOZE_TIMES, alarmEvent.getSnoozeTimes());
+            values.put(COLUMN_SYNC_AT, DatetimeFormatter.calendarToString(alarmEvent.getSyncAt()));
+            values.put(COLUMN_DELETED_AT, DatetimeFormatter.calendarToString(alarmEvent.getDeletedAt()));
+            SocialClockLogger.log("Insert DB Record: " + alarmEvent.getEventId());
+            return db.insert(TABLE_NAME, null, values);
+        } finally {
+            db.close();
+        }
     }
 
     /**
@@ -149,14 +178,19 @@ public class AlarmEventDbAdapter {
      * @param alarmEvent AlarmEvent object
      */
     public int update(AlarmEvent alarmEvent) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_END_AT, DatetimeFormatter.calendarToString(alarmEvent.getEndAt()));
-        values.put(COLUMN_SNOOZE_TIMES, alarmEvent.getSnoozeTimes());
-        values.put(COLUMN_SYNC_AT, DatetimeFormatter.calendarToString(alarmEvent.getSyncAt()));
-        values.put(COLUMN_DELETED_AT, DatetimeFormatter.calendarToString(alarmEvent.getDeletedAt()));
-        String whereClause = COLUMN_EVENT_ID + "='" + alarmEvent.getEventId() + "'";
-        SocialClockLogger.log("Update DB Record: " + alarmEvent.getEventId());
-        return db.update(TABLE_NAME, values, whereClause, null);
+        requireDb();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_END_AT, DatetimeFormatter.calendarToString(alarmEvent.getEndAt()));
+            values.put(COLUMN_SNOOZE_TIMES, alarmEvent.getSnoozeTimes());
+            values.put(COLUMN_SYNC_AT, DatetimeFormatter.calendarToString(alarmEvent.getSyncAt()));
+            values.put(COLUMN_DELETED_AT, DatetimeFormatter.calendarToString(alarmEvent.getDeletedAt()));
+            String whereClause = COLUMN_EVENT_ID + "='" + alarmEvent.getEventId() + "'";
+            SocialClockLogger.log("Update DB Record: " + alarmEvent.getEventId());
+            return db.update(TABLE_NAME, values, whereClause, null);
+        } finally {
+            db.close();
+        }
     }
 
     /**
@@ -164,9 +198,14 @@ public class AlarmEventDbAdapter {
      * @param eventId AlarmEvent eventId
      */
     public int delete(String eventId) {
-        String whereClause = COLUMN_EVENT_ID + "='" + eventId + "'";
-        SocialClockLogger.log("Delete DB Record: " + eventId);
-        return db.delete(TABLE_NAME, whereClause, null);
+        requireDb();
+        try {
+            String whereClause = COLUMN_EVENT_ID + "='" + eventId + "'";
+            SocialClockLogger.log("Delete DB Record: " + eventId);
+            return db.delete(TABLE_NAME, whereClause, null);
+        } finally {
+            db.close();
+        }
     }
 
     /**
@@ -178,11 +217,12 @@ public class AlarmEventDbAdapter {
         return new AlarmEvent(
                 cursor.getString(0),
                 cursor.getString(1),
-                DatetimeFormatter.stringToCalendar(cursor.getString(2)),
+                cursor.getString(2),
                 DatetimeFormatter.stringToCalendar(cursor.getString(3)),
-                cursor.getInt(4),
-                DatetimeFormatter.stringToCalendar(cursor.getString(5)),
-                DatetimeFormatter.stringToCalendar(cursor.getString(6))
+                DatetimeFormatter.stringToCalendar(cursor.getString(4)),
+                cursor.getInt(5),
+                DatetimeFormatter.stringToCalendar(cursor.getString(6)),
+                DatetimeFormatter.stringToCalendar(cursor.getString(7))
         );
     }
 }

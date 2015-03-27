@@ -10,6 +10,7 @@ public class AlarmEvent {
 
     private String eventId;
     private String userId;
+    private String userName;
     private Calendar startAt;
     private Calendar endAt;
     private int snoozeTimes;
@@ -20,11 +21,13 @@ public class AlarmEvent {
      * constructor when create an alarm
      * @param eventId String alarm event id
      * @param userId String user id
+     * @param userName String user name
      * @param startAt Calendar alarmed time
      */
-    public AlarmEvent(String eventId, String userId, Calendar startAt) {
+    public AlarmEvent(String eventId, String userId, String userName, Calendar startAt) {
         this.eventId = eventId;
         this.userId = userId;
+        this.userName = userName;
         this.startAt = startAt;
     }
 
@@ -32,6 +35,7 @@ public class AlarmEvent {
      * constructor
      * @param eventId String alarm event id (primary key)
      * @param userId String user id
+     * @param userName String user name
      * @param startAt Calendar alarmed time
      * @param endAt Calendar get up time
      * @param snoozeTimes int snooze times
@@ -40,6 +44,7 @@ public class AlarmEvent {
      */
     public AlarmEvent(String eventId,
                       String userId,
+                      String userName,
                       Calendar startAt,
                       Calendar endAt,
                       int snoozeTimes,
@@ -48,6 +53,7 @@ public class AlarmEvent {
 
         this.eventId = eventId;
         this.userId = userId;
+        this.userName = userName;
         this.startAt = startAt;
         this.endAt = endAt;
         this.snoozeTimes = snoozeTimes;
@@ -61,6 +67,10 @@ public class AlarmEvent {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public Calendar getStartAt() {
