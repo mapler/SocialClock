@@ -25,6 +25,7 @@ public class SocialClockManager {
     private AlarmServiceManager alarmServiceManager;
     private AlarmEventManager alarmEventManager;
     private SnsManager snsManager;
+    private AlarmRingtoneManager alarmRingtoneManager;
 
     /**
      * Constructor
@@ -38,6 +39,7 @@ public class SocialClockManager {
         this.notificationServiceManager = new NotificationServiceManager(context);
         this.alarmServiceManager = new AlarmServiceManager(context);
         this.snsManager = new SnsManager(context);
+        this.alarmRingtoneManager = new AlarmRingtoneManager(context);
     }
 
     /**
@@ -101,12 +103,11 @@ public class SocialClockManager {
             Calendar startAt = Calendar.getInstance();
             alarmEventManager.startAlarmEvent(alarmEventId, userId, userName, startAt);
         }
-        // cancel snooze notification if has one
-        notificationServiceManager.cancelNotification();
     }
 
     /**
      * Update(or create) a snooze alarm
+     * if alarm event is null or is finished, return
      * 1. count up alarm event snooze times
      * 2. set next snooze alarm with intent
      * 3. cancel if any snooze notification
@@ -114,6 +115,15 @@ public class SocialClockManager {
      * @param alarmEventId String
      */
     public void snoozeAlarm(String alarmEventId) {
+
+        // cancel snooze notification if has one
+        notificationServiceManager.cancelNotification();
+
+        // exit if alarm event is not exist or finished
+        AlarmEvent alarmEvent = alarmEventManager.getAlarmEventById(alarmEventId);
+        if (alarmEvent == null || alarmEvent.isFinished()) {
+            return;
+        }
 
         // count up alarm event snooze
         alarmEventManager.snoozeAlarmEvent(alarmEventId);
@@ -129,9 +139,6 @@ public class SocialClockManager {
         alarmServiceManager.setAlarm(alarmEventId,
                 ConstantData.AlarmType.ALARM_SNOOZE,
                 snoozeTimeStamp);
-
-        // cancel snooze notification if has one
-        notificationServiceManager.cancelNotification();
 
         // create next notification
         notificationServiceManager.createNotification(alarmEventId, snoozeTime);
@@ -191,7 +198,7 @@ public class SocialClockManager {
 
         for (AlarmEvent alarmEvent : allAlarmEvents) {
             // filter event is finished
-            if (alarmEvent.getEndAt() == null){
+            if (!alarmEvent.isFinished()){
                 continue;
             }
             Map<String, Object> map = new HashMap<>();
@@ -205,5 +212,13 @@ public class SocialClockManager {
             parsedAlarmEvents.add(map);
         }
         return parsedAlarmEvents;
+    }
+
+    public void playRingtone() {
+        alarmRingtoneManager.playRingtone();
+    }
+
+    public void stopRingtone() {
+        alarmRingtoneManager.stopRingtone();
     }
 }

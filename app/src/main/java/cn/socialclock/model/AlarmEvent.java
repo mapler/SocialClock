@@ -73,11 +73,11 @@ public class AlarmEvent {
 
     /**
      * get user name
-     * if username is null, return "ANONYMOUS"
+     * if username is null or empty, return "ANONYMOUS"
      * @return username String
      */
     public String getUserName() {
-        if (userName == null) {
+        if (userName == null || userName.equals("")) {
             return ConstantData.UserName.ANONYMOUS_USER;
         }
         return userName;
@@ -89,6 +89,14 @@ public class AlarmEvent {
 
     public Calendar getEndAt() {
         return endAt;
+    }
+
+    /**
+     * check event is finished
+     * @return boolean
+     */
+    public boolean isFinished() {
+        return getEndAt() != null;
     }
 
     public void setEndAt(Calendar endAt) {

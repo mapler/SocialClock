@@ -2,10 +2,6 @@ package cn.socialclock.ui;
 
 
 import android.app.Activity;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -14,8 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.socialclock.R;
 import cn.socialclock.manager.SocialClockManager;
@@ -45,8 +39,6 @@ public class AlarmPopActivity extends Activity {
 
     private Calendar nowCalendar;
 
-    private MediaPlayer ringtoneMediaPlayer;
-
     private String currentAlarmEventId;
 
     @Override
@@ -64,9 +56,6 @@ public class AlarmPopActivity extends Activity {
         // get current time
         nowCalendar = Calendar.getInstance();
 
-        // get ringtone player
-        ringtoneMediaPlayer = new MediaPlayer();
-
         int alarmType = this.getIntent().getIntExtra(ConstantData.BundleArgsName.ALARM_TYPE, 1);
         currentAlarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
         SocialClockLogger.log("AlarmPop: alarmType = " + alarmType + ", currentAlarmEventId = " + currentAlarmEventId);
@@ -80,6 +69,12 @@ public class AlarmPopActivity extends Activity {
         // play alarm ringtone
         playAlarmRingtone();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        socialClockManager.stopRingtone();
     }
 
     private void buildInterface() {
@@ -103,7 +98,7 @@ public class AlarmPopActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // stop ringtone
-                ringtoneMediaPlayer.stop();
+                socialClockManager.stopRingtone();
 
                 socialClockManager.snoozeAlarm(currentAlarmEventId);
                 int snoozeDuration = clockSettings.getSnoozeDuration();
@@ -120,7 +115,7 @@ public class AlarmPopActivity extends Activity {
             @Override
             public void onClick(View v) {
                 /* stop ringtone */
-                ringtoneMediaPlayer.stop();
+                socialClockManager.stopRingtone();
 
                 /* get up action */
                 socialClockManager.getUp(currentAlarmEventId);
@@ -143,35 +138,7 @@ public class AlarmPopActivity extends Activity {
 
     /** play the alarm ringtone */
     private void playAlarmRingtone() {
-        // todo create a media player singleton class
-        // set player to loop
-        ringtoneMediaPlayer.setLooping(true);
-
-        // get default alarm ringtone uri
-        Uri mediaUri = RingtoneManager
-                .getDefaultUri(RingtoneManager.TYPE_ALARM);
-
-        try {
-            /* start player ringtone */
-            SocialClockLogger.log("Player Ringtone: " + mediaUri.toString());
-            ringtoneMediaPlayer.setDataSource(this, mediaUri);
-            ringtoneMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-            ringtoneMediaPlayer.prepare();
-            ringtoneMediaPlayer.start();
-        } catch (Exception e) {
-            /* if fail */
-            Toast.makeText(this, "Player Ringtone fail.", Toast.LENGTH_SHORT);
-            SocialClockLogger.log("Player Ringtone: Fail. " + e.toString());
-        }
-
-        /* auto stop after RINGTONE_DURATION */
-        Timer ringtoneTimer = new Timer();
-        ringtoneTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                ringtoneMediaPlayer.stop();
-            }
-        }, ConstantData.ConstantTime.RINGTONE_DURATION);
+        socialClockManager.playRingtone();
     }
 
     /** forbidden hard keys

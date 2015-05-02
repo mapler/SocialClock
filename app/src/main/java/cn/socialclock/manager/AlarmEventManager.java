@@ -89,13 +89,15 @@ public class AlarmEventManager {
     }
 
     /**
-     * finishAlarmEvent
+     * finishAlarmEvent if event not finished
      * @param alarmEventId String
      */
     protected void finishAlarmEvent(String alarmEventId) {
         Calendar getUpTime = Calendar.getInstance();
         AlarmEvent alarmEvent = getAlarmEventById(alarmEventId);
-        alarmEvent.setEndAt(getUpTime);
-        dbAdapter.update(alarmEvent);
+        if (alarmEvent.getEndAt() == null) {
+            alarmEvent.setEndAt(getUpTime);
+            dbAdapter.update(alarmEvent);
+        }
     }
 }
