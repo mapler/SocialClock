@@ -36,7 +36,13 @@
         <activity
             android:theme="@android:style/Theme.NoDisplay"
             android:launchMode="singleTask"
-            android:name=".ui.NotificationTouchActivity"
+            android:name=".ui.SnoozeNotificationTouchActivity"
+            android:screenOrientation="user" >
+        </activity>
+        <activity
+            android:theme="@android:style/Theme.NoDisplay"
+            android:launchMode="singleTask"
+            android:name=".ui.AlarmNotificationTouchActivity"
             android:screenOrientation="user" >
         </activity>
         <activity android:name=".ui.SettingsActivity">

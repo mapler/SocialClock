@@ -17,24 +17,28 @@ import cn.socialclock.utils.SocialClockLogger;
 
 public class AlarmRingtoneManager {
 
-    private MediaPlayer ringtoneMediaPlayer;
-    private Context context;
-    private Uri alarmUri;
+    private static MediaPlayer ringtoneMediaPlayer;
+    private static Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
-    public AlarmRingtoneManager(Context context) {
-        this.context = context;
-        this.alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        this.ringtoneMediaPlayer = new MediaPlayer();
-        this.ringtoneMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-        this.ringtoneMediaPlayer.setLooping(true);
+    public static MediaPlayer getAlarmRingtoneManager() {
+        if (ringtoneMediaPlayer == null) {
+            ringtoneMediaPlayer = new MediaPlayer();
+        }
+        ringtoneMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+        ringtoneMediaPlayer.setLooping(true);
+        return ringtoneMediaPlayer;
     }
 
-    public void playRingtone() {
+    public static void playRingtone(Context context) {
         try {
-            ringtoneMediaPlayer.setDataSource(context, alarmUri);
-            /* start player ringtone */
-            ringtoneMediaPlayer.prepare();
-            ringtoneMediaPlayer.start();
+            ringtoneMediaPlayer = getAlarmRingtoneManager();
+            if (!ringtoneMediaPlayer.isPlaying()) {
+                SocialClockLogger.log("Play Ringtone");
+                ringtoneMediaPlayer.setDataSource(context, alarmUri);
+                /* start player ringtone */
+                ringtoneMediaPlayer.prepare();
+                ringtoneMediaPlayer.start();
+            }
         } catch (IOException e) {
             /* if fail */
             Toast.makeText(context, "Player Ringtone fail.", Toast.LENGTH_SHORT);
@@ -46,13 +50,19 @@ public class AlarmRingtoneManager {
         ringtoneTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                ringtoneMediaPlayer.stop();
+                SocialClockLogger.log("Stop Ringtone by Timer");
+                stopRingtone();
             }
         }, ConstantData.ConstantTime.RINGTONE_DURATION);
     }
 
-    public void stopRingtone() {
-        ringtoneMediaPlayer.stop();
+    public static void stopRingtone() {
+        ringtoneMediaPlayer = getAlarmRingtoneManager();
+        if (ringtoneMediaPlayer.isPlaying()) {
+            SocialClockLogger.log("Stop Ringtone");
+            ringtoneMediaPlayer.stop();
+        }
+        ringtoneMediaPlayer.reset();
     }
 }
 

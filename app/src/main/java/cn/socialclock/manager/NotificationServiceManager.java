@@ -9,7 +9,8 @@ import android.content.Intent;
 import java.util.Calendar;
 
 import cn.socialclock.R;
-import cn.socialclock.ui.NotificationTouchActivity;
+import cn.socialclock.ui.AlarmNotificationTouchActivity;
+import cn.socialclock.ui.SnoozeNotificationTouchActivity;
 import cn.socialclock.utils.ConstantData;
 
 /**
@@ -26,26 +27,40 @@ public class NotificationServiceManager {
         this.notificationManager = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
     }
+    /**
+     * Cancel all notifications
+     */
+    protected void cancelAllNotifications() {
+        cancelAlarmNotification();
+        cancelSnoozeNotification();
+    }
 
     /**
-     * Cancel a notification
+     * Cancel a snooze notification
      */
-    protected void cancelNotification() {
+    protected void cancelSnoozeNotification() {
         notificationManager.cancel(ConstantData.AlarmType.ALARM_SNOOZE);
     }
 
-    /** Create a notification
+    /**
+     * Cancel a alarm notification
+     */
+    protected void cancelAlarmNotification() {
+        notificationManager.cancel(ConstantData.AlarmType.ALARM_NORMAL);
+    }
+
+    /** Create a snooze notification
      * @param alarmEventId String
      * @param snoozeTime Calendar
      * */
-    protected void createNotification(String alarmEventId, Calendar snoozeTime) {
+    protected void createSnoozeNotification(String alarmEventId, Calendar snoozeTime) {
 
         Notification notification = new Notification(
                 R.drawable.alarm_notification_icon, "SocialAlarm", System
                 .currentTimeMillis());
 
         Intent notificationIntent = new Intent(context,
-                NotificationTouchActivity.class);
+                SnoozeNotificationTouchActivity.class);
         // bundle the alarmEventId
         notificationIntent.putExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID, alarmEventId);
 
@@ -61,4 +76,29 @@ public class NotificationServiceManager {
         notificationManager.notify(ConstantData.AlarmType.ALARM_SNOOZE, notification);
     }
 
+    /** Create a alarm notification
+     * @param alarmEventId String
+     * @param alarmTime Calendar
+     * */
+    protected void createAlarmNotification(String alarmEventId, Calendar alarmTime) {
+
+        Notification notification = new Notification(
+                R.drawable.alarm_notification_icon, "SocialAlarm", System
+                .currentTimeMillis());
+
+        Intent notificationIntent = new Intent(context,
+                AlarmNotificationTouchActivity.class);
+        // bundle the alarmEventId
+        notificationIntent.putExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID, alarmEventId);
+
+        String notificationText = "Alarm at "
+                + String.format("%02d", alarmTime.get(Calendar.HOUR_OF_DAY)) + ":"
+                + String.format("%02d", alarmTime.get(Calendar.MINUTE));
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                context, ConstantData.AlarmType.ALARM_NORMAL,
+                notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        notification.setLatestEventInfo(context, "SocialAlarm", notificationText, contentIntent);
+        // send notification
+        notificationManager.notify(ConstantData.AlarmType.ALARM_NORMAL, notification);
+    }
 }

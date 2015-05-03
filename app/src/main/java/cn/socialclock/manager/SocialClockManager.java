@@ -25,7 +25,7 @@ public class SocialClockManager {
     private AlarmServiceManager alarmServiceManager;
     private AlarmEventManager alarmEventManager;
     private SnsManager snsManager;
-    private AlarmRingtoneManager alarmRingtoneManager;
+    private Context context;
 
     /**
      * Constructor
@@ -39,7 +39,7 @@ public class SocialClockManager {
         this.notificationServiceManager = new NotificationServiceManager(context);
         this.alarmServiceManager = new AlarmServiceManager(context);
         this.snsManager = new SnsManager(context);
-        this.alarmRingtoneManager = new AlarmRingtoneManager(context);
+        this.context = context;
     }
 
     /**
@@ -77,8 +77,8 @@ public class SocialClockManager {
                 ConstantData.AlarmType.ALARM_NORMAL,
                 alarmTimeStamp);
 
-        // cancel snooze notification if has one
-        notificationServiceManager.cancelNotification();
+        // cancel notifications
+        notificationServiceManager.cancelAllNotifications();
 
         // write log
         SocialClockLogger.log("AlarmEventManager: createAlarm: "
@@ -95,14 +95,22 @@ public class SocialClockManager {
      * @param alarmEventId String alarmed alarm event id
      */
     public void startAlarm(String alarmEventId) {
+
+        // cancel notifications
+        notificationServiceManager.cancelAllNotifications();
+
         AlarmEvent alarmEvent = alarmEventManager.getAlarmEventById(alarmEventId);
+        Calendar startAt = Calendar.getInstance();
         // start an alarm event if not exist
         if (alarmEvent == null){
             String userId = clockSettings.getUserId();
             String userName = clockSettings.getUserName();
-            Calendar startAt = Calendar.getInstance();
             alarmEventManager.startAlarmEvent(alarmEventId, userId, userName, startAt);
         }
+        notificationServiceManager.createAlarmNotification(alarmEventId, startAt);
+
+        // start playing ringtone
+        AlarmRingtoneManager.playRingtone(context);
     }
 
     /**
@@ -116,8 +124,11 @@ public class SocialClockManager {
      */
     public void snoozeAlarm(String alarmEventId) {
 
-        // cancel snooze notification if has one
-        notificationServiceManager.cancelNotification();
+        // cancel notifications
+        notificationServiceManager.cancelAllNotifications();
+
+        // stop ringtone
+        AlarmRingtoneManager.stopRingtone();
 
         // exit if alarm event is not exist or finished
         AlarmEvent alarmEvent = alarmEventManager.getAlarmEventById(alarmEventId);
@@ -141,7 +152,7 @@ public class SocialClockManager {
                 snoozeTimeStamp);
 
         // create next notification
-        notificationServiceManager.createNotification(alarmEventId, snoozeTime);
+        notificationServiceManager.createSnoozeNotification(alarmEventId, snoozeTime);
 
         // write log
         SocialClockLogger.log("AlarmEventManager: snooze to "
@@ -156,8 +167,10 @@ public class SocialClockManager {
     public void cancelAlarm() {
         // cancel alarm
         alarmServiceManager.cancelAlarm();
-        // cancel notification
-        notificationServiceManager.cancelNotification();
+        // stop alarm
+        AlarmRingtoneManager.stopRingtone();
+        // cancel notifications
+        notificationServiceManager.cancelAllNotifications();
     }
 
     /** Get up
@@ -168,8 +181,11 @@ public class SocialClockManager {
     public void getUp(String alarmEventId) {
         SocialClockLogger.log("GetUpAction");
 
-        // cancel notification
-        notificationServiceManager.cancelNotification();
+        // cancel notifications
+        notificationServiceManager.cancelAllNotifications();
+
+        // stop ringtone
+        AlarmRingtoneManager.stopRingtone();
 
         // finish alarm event
         alarmEventManager.finishAlarmEvent(alarmEventId);
@@ -212,13 +228,5 @@ public class SocialClockManager {
             parsedAlarmEvents.add(map);
         }
         return parsedAlarmEvents;
-    }
-
-    public void playRingtone() {
-        alarmRingtoneManager.playRingtone();
-    }
-
-    public void stopRingtone() {
-        alarmRingtoneManager.stopRingtone();
     }
 }

@@ -65,16 +65,6 @@ public class AlarmPopActivity extends Activity {
 
         // build ui
         buildInterface();
-
-        // play alarm ringtone
-        playAlarmRingtone();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        socialClockManager.stopRingtone();
     }
 
     private void buildInterface() {
@@ -97,9 +87,6 @@ public class AlarmPopActivity extends Activity {
         btnSnooze.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // stop ringtone
-                socialClockManager.stopRingtone();
-
                 socialClockManager.snoozeAlarm(currentAlarmEventId);
                 int snoozeDuration = clockSettings.getSnoozeDuration();
                 Toast.makeText(AlarmPopActivity.this,
@@ -114,9 +101,6 @@ public class AlarmPopActivity extends Activity {
         btnGetup.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* stop ringtone */
-                socialClockManager.stopRingtone();
-
                 /* get up action */
                 socialClockManager.getUp(currentAlarmEventId);
 
@@ -134,11 +118,6 @@ public class AlarmPopActivity extends Activity {
         String nowMinute = String.format("%02d", nowCalendar.get(Calendar.MINUTE));
         TextView txTime = (TextView) findViewById(R.id.txClock);
         txTime.setText(nowHour + ":" + nowMinute);
-    }
-
-    /** play the alarm ringtone */
-    private void playAlarmRingtone() {
-        socialClockManager.playRingtone();
     }
 
     /** forbidden hard keys

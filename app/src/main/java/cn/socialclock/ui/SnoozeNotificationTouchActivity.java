@@ -15,16 +15,16 @@ import cn.socialclock.utils.SocialClockLogger;
  * 2. send sns
  */
 
-public class NotificationTouchActivity extends Activity {
+public class SnoozeNotificationTouchActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SocialClockLogger.log("NotificationAction: onCreate");
+        SocialClockLogger.log("SnoozeNotificationAction: onCreate");
 
         // get alarm event id
         String alarmEventId = this.getIntent().getStringExtra(ConstantData.BundleArgsName.ALARM_EVENT_ID);
-        SocialClockLogger.log("NotificationAction: onCreate: alarmEventId: " + alarmEventId);
+        SocialClockLogger.log("SnoozeNotificationAction: onCreate: alarmEventId: " + alarmEventId);
 
         SocialClockManager socialClockManager = new SocialClockManager(this);
 
